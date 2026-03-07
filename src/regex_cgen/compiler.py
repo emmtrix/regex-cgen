@@ -14,6 +14,10 @@ try:
     from sre_constants import (
         ANY,
         AT,
+        AT_BEGINNING,
+        AT_BEGINNING_STRING,
+        AT_END,
+        AT_END_STRING,
         BRANCH,
         CATEGORY,
         CATEGORY_DIGIT,
@@ -35,6 +39,10 @@ except ImportError:
     from re._constants import (  # Python ≥ 3.13
         ANY,
         AT,
+        AT_BEGINNING,
+        AT_BEGINNING_STRING,
+        AT_END,
+        AT_END_STRING,
         BRANCH,
         CATEGORY,
         CATEGORY_DIGIT,
@@ -70,6 +78,30 @@ _WORD = (
     | frozenset({95})
 )
 _SPACE = frozenset({9, 10, 12, 13, 32})
+
+
+def _build_casefold_table() -> dict[str, frozenset[int]]:
+    """Build a lookup: fold-key → set of code-points in the same class.
+
+    Uses ``str.casefold()`` for single-character folds and falls back to
+    ``str.lower()`` for characters with multi-character casefolds (e.g. ß).
+    This matches re2's *simple* case-folding behaviour.
+    """
+    table: dict[str, set[int]] = {}
+    for cp in range(0x10000):
+        ch = chr(cp)
+        cf = ch.casefold()
+        if len(cf) == 1:
+            table.setdefault(cf, set()).add(cp)
+        else:
+            # Multi-char casefold (e.g. ß→ss): use lower() as simple fold
+            lc = ch.lower()
+            if len(lc) == 1:
+                table.setdefault(lc, set()).add(cp)
+    return {k: frozenset(v) for k, v in table.items()}
+
+
+_CF_TABLE: dict[str, frozenset[int]] = _build_casefold_table()
 
 
 def _category_bytes(cat: int) -> frozenset[int]:
@@ -119,33 +151,116 @@ class NFABuilder:
 
     def _add_char(self, src: int, code: int, dst: int) -> None:
         """Add transition(s) for a single character code point."""
+        if self.case_insensitive:
+            for alt in self._case_variants(code):
+                self._add_char_raw(src, alt, dst)
+        else:
+            self._add_char_raw(src, code, dst)
+
+    def _add_char_raw(self, src: int, code: int, dst: int) -> None:
+        """Add transition for one code point (no case expansion)."""
         if code <= 127:
             self._tr(src, code, dst)
-            if self.case_insensitive and chr(code).isalpha():
-                self._tr(src, ord(chr(code).swapcase()), dst)
         else:
-            # Encode as UTF-8 byte sequence
             utf8 = chr(code).encode("utf-8")
             prev = src
             for i, b in enumerate(utf8):
                 nxt = dst if i == len(utf8) - 1 else self._new()
                 self._tr(prev, b, nxt)
                 prev = nxt
-            if self.case_insensitive:
-                other = chr(code).swapcase()
-                if other != chr(code):
-                    other_utf8 = other.encode("utf-8")
-                    prev = src
-                    for i, b in enumerate(other_utf8):
-                        nxt = dst if i == len(other_utf8) - 1 else self._new()
-                        self._tr(prev, b, nxt)
-                        prev = nxt
+
+    @staticmethod
+    def _case_variants(code: int) -> frozenset[int]:
+        """Return the Unicode simple-case-fold equivalence class of *code*."""
+        ch = chr(code)
+        cf = ch.casefold()
+        if len(cf) == 1:
+            return _CF_TABLE.get(cf, frozenset({code}))
+        # Multi-character casefold (e.g. ß → ss): use lower() as key
+        lc = ch.lower()
+        if len(lc) == 1:
+            return _CF_TABLE.get(lc, frozenset({code}))
+        return frozenset({code})
+
+    def _add_utf8_paths(
+        self, src: int, dst: int, excluded_cps: set[int] | None = None
+    ) -> None:
+        """Add transitions for valid multi-byte UTF-8 sequences.
+
+        If *excluded_cps* is given, code-points in that set are skipped.
+        Uses shared intermediate states for compact NFA.
+        """
+        if excluded_cps is None:
+            excluded_cps = set()
+
+        # -- 2-byte sequences (U+0080 .. U+07FF) --
+        # Group first-bytes by the set of accepted second-bytes so that
+        # first-bytes with identical continuation ranges share one state.
+        groups_2: dict[frozenset[int], list[int]] = {}
+        for first in range(0xC2, 0xE0):
+            acc: set[int] = set()
+            for second in range(0x80, 0xC0):
+                cp = ((first & 0x1F) << 6) | (second & 0x3F)
+                if cp not in excluded_cps:
+                    acc.add(second)
+            if acc:
+                groups_2.setdefault(frozenset(acc), []).append(first)
+        for seconds, firsts in groups_2.items():
+            inter = self._new()
+            for fb in firsts:
+                self._tr(src, fb, inter)
+            for sb in seconds:
+                self._tr(inter, sb, dst)
+
+        # -- 3-byte sequences (U+0800 .. U+FFFF) --
+        # Shared last-continuation state: cont --[80-BF]--> dst
+        cont3 = self._new()
+        for b in range(0x80, 0xC0):
+            self._tr(cont3, b, dst)
+        # E0: E0 [A0-BF] cont3
+        s_e0 = self._new()
+        self._tr(src, 0xE0, s_e0)
+        for sb in range(0xA0, 0xC0):
+            self._tr(s_e0, sb, cont3)
+        # E1-EC, EE-EF: [E1-EC,EE-EF] [80-BF] cont3
+        s_norm3 = self._new()
+        for fb in list(range(0xE1, 0xED)) + [0xEE, 0xEF]:
+            self._tr(src, fb, s_norm3)
+        for sb in range(0x80, 0xC0):
+            self._tr(s_norm3, sb, cont3)
+        # ED: ED [80-9F] cont3
+        s_ed = self._new()
+        self._tr(src, 0xED, s_ed)
+        for sb in range(0x80, 0xA0):
+            self._tr(s_ed, sb, cont3)
+
+        # -- 4-byte sequences (U+10000 .. U+10FFFF) --
+        # Shared mid-continuation: cont4mid --[80-BF]--> cont3
+        cont4 = self._new()
+        for b in range(0x80, 0xC0):
+            self._tr(cont4, b, cont3)
+        # F0: F0 [90-BF] cont4
+        s_f0 = self._new()
+        self._tr(src, 0xF0, s_f0)
+        for sb in range(0x90, 0xC0):
+            self._tr(s_f0, sb, cont4)
+        # F1-F3: [F1-F3] [80-BF] cont4
+        s_fnorm = self._new()
+        for fb in range(0xF1, 0xF4):
+            self._tr(src, fb, s_fnorm)
+        for sb in range(0x80, 0xC0):
+            self._tr(s_fnorm, sb, cont4)
+        # F4: F4 [80-8F] cont4
+        s_f4 = self._new()
+        self._tr(src, 0xF4, s_f4)
+        for sb in range(0x80, 0x90):
+            self._tr(s_f4, sb, cont4)
 
     def _char_set(self, items: list) -> set[int]:
-        """Resolve an ``IN`` item list to a set of **byte** values (0-255).
+        """Resolve an ``IN`` item list to a set of **ASCII byte** values.
 
-        Only ASCII code-points are included; non-ASCII code-points are
-        returned separately via ``_non_ascii_set``.
+        Only ASCII code-points (0-127) are included.  Non-ASCII code-points
+        must be handled separately via multi-byte UTF-8 paths.
         """
         chars: set[int] = set()
         negate = False
@@ -153,24 +268,60 @@ class NFABuilder:
             if op == NEGATE:
                 negate = True
             elif op == LITERAL:
-                if value <= 127:
+                if self.case_insensitive:
+                    for alt in self._case_variants(value):
+                        if alt <= 127:
+                            chars.add(alt)
+                elif value <= 127:
                     chars.add(value)
-                    if self.case_insensitive and chr(value).isalpha():
-                        chars.add(ord(chr(value).swapcase()))
             elif op == RANGE:
                 lo, hi = value
                 for c in range(lo, min(hi + 1, 128)):
-                    chars.add(c)
-                    if self.case_insensitive and chr(c).isalpha():
-                        chars.add(ord(chr(c).swapcase()))
+                    if self.case_insensitive:
+                        for alt in self._case_variants(c):
+                            if alt <= 127:
+                                chars.add(alt)
+                    else:
+                        chars.add(c)
             elif op == CATEGORY:
                 chars |= set(_category_bytes(value))
         if negate:
-            chars = set(range(256)) - chars
+            # Only negate within ASCII; multi-byte UTF-8 handled separately
+            chars = set(range(128)) - chars
         return chars
 
+    def _excluded_cps(self, items: list) -> set[int]:
+        """Collect non-ASCII code-points *excluded* by a negated IN list.
+
+        When case-insensitive, also includes non-ASCII case-fold equivalents
+        of excluded ASCII characters (e.g. 's' → U+017F LONG S).
+        """
+        cps: set[int] = set()
+        for op, value in items:
+            if op == LITERAL:
+                if self.case_insensitive:
+                    for alt in self._case_variants(value):
+                        if alt >= 128:
+                            cps.add(alt)
+                elif value >= 128:
+                    cps.add(value)
+            elif op == RANGE:
+                lo, hi = value
+                for c in range(lo, min(hi + 1, 0x800)):
+                    if self.case_insensitive:
+                        for alt in self._case_variants(c):
+                            if alt >= 128:
+                                cps.add(alt)
+                    elif c >= 128:
+                        cps.add(c)
+        return cps
+
     def _non_ascii_codes(self, items: list) -> set[int]:
-        """Collect non-ASCII code-points from an ``IN`` item list."""
+        """Collect non-ASCII code-points from an ``IN`` item list.
+
+        For case-insensitive mode, also includes non-ASCII case-fold
+        equivalents of ASCII characters in the class.
+        """
         codes: set[int] = set()
         negate = False
         for op, value in items:
@@ -179,12 +330,20 @@ class NFABuilder:
             elif op == LITERAL:
                 if value > 127:
                     codes.add(value)
+                if self.case_insensitive:
+                    for alt in self._case_variants(value):
+                        if alt > 127:
+                            codes.add(alt)
             elif op == RANGE:
                 lo, hi = value
-                # Cap expansion to prevent explosion
                 for c in range(max(lo, 128), min(hi + 1, 0x800)):
                     codes.add(c)
-        # Negation of non-ASCII is too complex for byte-level DFA; skip
+                if self.case_insensitive:
+                    for c in range(lo, min(hi + 1, 128)):
+                        for alt in self._case_variants(c):
+                            if alt > 127:
+                                codes.add(alt)
+        # Negation handled separately via _add_utf8_paths
         if negate:
             return set()
         return codes
@@ -223,10 +382,12 @@ class NFABuilder:
         if op in (MAX_REPEAT, MIN_REPEAT):
             return self._repeat(val)
         if op == AT:
-            # Anchors are no-ops for fullmatch
-            s0, s1 = self._new(), self._new()
-            self._eps(s0, s1)
-            return s0, s1
+            # ^, $, \A, \Z are no-ops for fullmatch
+            if val in (AT_BEGINNING, AT_END, AT_BEGINNING_STRING, AT_END_STRING):
+                s0, s1 = self._new(), self._new()
+                self._eps(s0, s1)
+                return s0, s1
+            raise ValueError(f"Unsupported anchor: {val}")
         raise ValueError(f"Unsupported regex op: {op}")
 
     def _literal(self, code: int) -> tuple[int, int]:
@@ -236,17 +397,24 @@ class NFABuilder:
 
     def _not_literal(self, code: int) -> tuple[int, int]:
         s0, s1 = self._new(), self._new()
-        if code <= 127:
-            excluded = {code}
-            if self.case_insensitive and chr(code).isalpha():
-                excluded.add(ord(chr(code).swapcase()))
-            for b in range(256):
-                if b not in excluded:
-                    self._tr(s0, b, s1)
+        excluded_ascii: set[int] = set()
+        excluded_nonascii: set[int] = set()
+        if self.case_insensitive:
+            for alt in self._case_variants(code):
+                if alt <= 127:
+                    excluded_ascii.add(alt)
+                else:
+                    excluded_nonascii.add(alt)
         else:
-            # Approximate: accept all bytes
-            for b in range(256):
+            if code <= 127:
+                excluded_ascii.add(code)
+            else:
+                excluded_nonascii.add(code)
+        for b in range(128):
+            if b not in excluded_ascii:
                 self._tr(s0, b, s1)
+        # Accept multi-byte UTF-8 except excluded code-points
+        self._add_utf8_paths(s0, s1, excluded_cps=excluded_nonascii)
         return s0, s1
 
     def _any(self) -> tuple[int, int]:
@@ -258,10 +426,17 @@ class NFABuilder:
 
     def _in(self, items: list) -> tuple[int, int]:
         s0, s1 = self._new(), self._new()
+        negate = any(op == NEGATE for op, _ in items)
+        # ASCII byte transitions
         for b in self._char_set(items):
             self._tr(s0, b, s1)
-        for code in self._non_ascii_codes(items):
-            self._add_char(s0, code, s1)
+        if negate:
+            # Add multi-byte UTF-8 paths for non-excluded code points
+            self._add_utf8_paths(s0, s1, excluded_cps=self._excluded_cps(items))
+        else:
+            # Add multi-byte UTF-8 paths for included non-ASCII code points
+            for code in self._non_ascii_codes(items):
+                self._add_char(s0, code, s1)
         return s0, s1
 
     def _branch(self, val) -> tuple[int, int]:
@@ -562,7 +737,34 @@ def _renumber(dfa: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 def _preprocess_pattern(pattern: str) -> str:
-    r"""Convert PCRE2-style ``\x{NNNN}`` escapes to literal characters."""
+    r"""Pre-process PCRE2 / re2 pattern extensions for ``sre_parse``.
+
+    * ``\x{NNNN}`` hex escapes → literal characters.
+    * POSIX character classes ``[:alpha:]`` etc. → equivalent ranges.
+    """
+    # POSIX class mapping (inside [...])
+    _POSIX = {
+        "[:alnum:]": "a-zA-Z0-9",
+        "[:alpha:]": "a-zA-Z",
+        "[:ascii:]": "\\x00-\\x7f",
+        "[:blank:]": " \\t",
+        "[:cntrl:]": "\\x00-\\x1f\\x7f",
+        "[:digit:]": "0-9",
+        "[:graph:]": "!-~",
+        "[:lower:]": "a-z",
+        "[:print:]": " -~",
+        "[:punct:]": "!-/:-@[-`{-~",
+        "[:space:]": " \\t\\n\\r\\f\\v",
+        "[:upper:]": "A-Z",
+        "[:word:]": "a-zA-Z0-9_",
+        "[:xdigit:]": "0-9a-fA-F",
+    }
+
+    # Replace POSIX classes inside character classes
+    for posix, replacement in _POSIX.items():
+        pattern = pattern.replace(posix, replacement)
+
+    # Replace \x{NNNN} hex escapes
     result: list[str] = []
     i = 0
     while i < len(pattern):
