@@ -129,8 +129,8 @@ Tests are parameterised from `re2_compat_results.json`, which contains
 Google re2.
 
 ```bash
-# Run all tests
-pytest -x -q
+# Run all tests (parallel)
+pytest -n auto -q
 
 # Run linter
 ruff check src/ tests/
@@ -154,7 +154,7 @@ cd regex-cgen
 pip install -e ".[dev]"
 
 # Test
-pytest -x -q
+pytest -n auto -q
 
 # Lint
 ruff check src/ tests/

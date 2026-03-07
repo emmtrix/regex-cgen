@@ -26,4 +26,4 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev]"
-      - run: pytest -x -q --tb=short
+      - run: pytest -n auto -q --tb=short

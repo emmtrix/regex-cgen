@@ -213,48 +213,94 @@ class NFABuilder:
                 self._tr(inter, sb, dst)
 
         # -- 3-byte sequences (U+0800 .. U+FFFF) --
-        # Shared last-continuation state: cont --[80-BF]--> dst
-        cont3 = self._new()
-        for b in range(0x80, 0xC0):
-            self._tr(cont3, b, dst)
-        # E0: E0 [A0-BF] cont3
-        s_e0 = self._new()
-        self._tr(src, 0xE0, s_e0)
-        for sb in range(0xA0, 0xC0):
-            self._tr(s_e0, sb, cont3)
-        # E1-EC, EE-EF: [E1-EC,EE-EF] [80-BF] cont3
-        s_norm3 = self._new()
-        for fb in list(range(0xE1, 0xED)) + [0xEE, 0xEF]:
-            self._tr(src, fb, s_norm3)
-        for sb in range(0x80, 0xC0):
-            self._tr(s_norm3, sb, cont3)
-        # ED: ED [80-9F] cont3
-        s_ed = self._new()
-        self._tr(src, 0xED, s_ed)
-        for sb in range(0x80, 0xA0):
-            self._tr(s_ed, sb, cont3)
+        excl_3 = {cp for cp in excluded_cps if 0x0800 <= cp <= 0xFFFF}
+        if not excl_3:
+            # No exclusions – use shared continuation states
+            cont3 = self._new()
+            for b in range(0x80, 0xC0):
+                self._tr(cont3, b, dst)
+            s_e0 = self._new()
+            self._tr(src, 0xE0, s_e0)
+            for sb in range(0xA0, 0xC0):
+                self._tr(s_e0, sb, cont3)
+            s_norm3 = self._new()
+            for fb in list(range(0xE1, 0xED)) + [0xEE, 0xEF]:
+                self._tr(src, fb, s_norm3)
+            for sb in range(0x80, 0xC0):
+                self._tr(s_norm3, sb, cont3)
+            s_ed = self._new()
+            self._tr(src, 0xED, s_ed)
+            for sb in range(0x80, 0xA0):
+                self._tr(s_ed, sb, cont3)
+        else:
+            # Group by (first_byte, second_byte) to find restricted third-bytes
+            excl_map: dict[int, dict[int, set[int]]] = {}
+            for cp in excl_3:
+                fb = ((cp >> 12) & 0x0F) | 0xE0
+                sb = ((cp >> 6) & 0x3F) | 0x80
+                tb = (cp & 0x3F) | 0x80
+                excl_map.setdefault(fb, {}).setdefault(sb, set()).add(tb)
+
+            def _second_range(fb: int) -> range:
+                if fb == 0xE0:
+                    return range(0xA0, 0xC0)
+                if fb == 0xED:
+                    return range(0x80, 0xA0)
+                return range(0x80, 0xC0)
+
+            for fb in range(0xE0, 0xF0):
+                sr = _second_range(fb)
+                if fb not in excl_map:
+                    # No exclusions for this first byte – simple path
+                    inter_fb = self._new()
+                    self._tr(src, fb, inter_fb)
+                    cont = self._new()
+                    for b in range(0x80, 0xC0):
+                        self._tr(cont, b, dst)
+                    for sb in sr:
+                        self._tr(inter_fb, sb, cont)
+                else:
+                    inter_fb = self._new()
+                    self._tr(src, fb, inter_fb)
+                    by_sb = excl_map[fb]
+                    for sb in sr:
+                        if sb in by_sb:
+                            acc_thirds = set(range(0x80, 0xC0)) - by_sb[sb]
+                            if acc_thirds:
+                                inter_sb = self._new()
+                                self._tr(inter_fb, sb, inter_sb)
+                                for tb in acc_thirds:
+                                    self._tr(inter_sb, tb, dst)
+                        else:
+                            cont = self._new()
+                            self._tr(inter_fb, sb, cont)
+                            for tb in range(0x80, 0xC0):
+                                self._tr(cont, tb, dst)
 
         # -- 4-byte sequences (U+10000 .. U+10FFFF) --
-        # Shared mid-continuation: cont4mid --[80-BF]--> cont3
-        cont4 = self._new()
+        # Shared continuation state for last two bytes
+        cont4_last = self._new()
         for b in range(0x80, 0xC0):
-            self._tr(cont4, b, cont3)
-        # F0: F0 [90-BF] cont4
+            self._tr(cont4_last, b, dst)
+        cont4_mid = self._new()
+        for b in range(0x80, 0xC0):
+            self._tr(cont4_mid, b, cont4_last)
+        # F0: F0 [90-BF] cont4_mid
         s_f0 = self._new()
         self._tr(src, 0xF0, s_f0)
         for sb in range(0x90, 0xC0):
-            self._tr(s_f0, sb, cont4)
-        # F1-F3: [F1-F3] [80-BF] cont4
+            self._tr(s_f0, sb, cont4_mid)
+        # F1-F3: [F1-F3] [80-BF] cont4_mid
         s_fnorm = self._new()
         for fb in range(0xF1, 0xF4):
             self._tr(src, fb, s_fnorm)
         for sb in range(0x80, 0xC0):
-            self._tr(s_fnorm, sb, cont4)
-        # F4: F4 [80-8F] cont4
+            self._tr(s_fnorm, sb, cont4_mid)
+        # F4: F4 [80-8F] cont4_mid
         s_f4 = self._new()
         self._tr(src, 0xF4, s_f4)
         for sb in range(0x80, 0x90):
-            self._tr(s_f4, sb, cont4)
+            self._tr(s_f4, sb, cont4_mid)
 
     def _char_set(self, items: list) -> set[int]:
         """Resolve an ``IN`` item list to a set of **ASCII byte** values.
@@ -285,8 +331,9 @@ class NFABuilder:
                         chars.add(c)
             elif op == CATEGORY:
                 chars |= set(_category_bytes(value))
+        # Always restrict to ASCII range; non-ASCII handled via UTF-8 paths
+        chars &= set(range(128))
         if negate:
-            # Only negate within ASCII; multi-byte UTF-8 handled separately
             chars = set(range(128)) - chars
         return chars
 
@@ -419,15 +466,18 @@ class NFABuilder:
 
     def _any(self) -> tuple[int, int]:
         s0, s1 = self._new(), self._new()
-        for b in range(256):
+        # ASCII bytes (except \n in non-dotall mode)
+        for b in range(128):
             if self.dot_all or b != 10:  # '\n' == 10
                 self._tr(s0, b, s1)
+        # Multi-byte UTF-8 sequences (all valid non-ASCII code points)
+        self._add_utf8_paths(s0, s1)
         return s0, s1
 
     def _in(self, items: list) -> tuple[int, int]:
         s0, s1 = self._new(), self._new()
         negate = any(op == NEGATE for op, _ in items)
-        # ASCII byte transitions
+        # ASCII byte transitions (capped to 0-127)
         for b in self._char_set(items):
             self._tr(s0, b, s1)
         if negate:
@@ -437,7 +487,22 @@ class NFABuilder:
             # Add multi-byte UTF-8 paths for included non-ASCII code points
             for code in self._non_ascii_codes(items):
                 self._add_char(s0, code, s1)
+            # NOT-categories (e.g. \S, \D, \W) implicitly include all non-ASCII
+            if self._needs_utf8_accept(items):
+                self._add_utf8_paths(s0, s1)
         return s0, s1
+
+    @staticmethod
+    def _needs_utf8_accept(items: list) -> bool:
+        """Return True if any item implicitly accepts non-ASCII characters."""
+        for op, value in items:
+            if op == CATEGORY and value in (
+                CATEGORY_NOT_DIGIT,
+                CATEGORY_NOT_WORD,
+                CATEGORY_NOT_SPACE,
+            ):
+                return True
+        return False
 
     def _branch(self, val) -> tuple[int, int]:
         _, branches = val
@@ -745,19 +810,33 @@ def _preprocess_pattern(pattern: str) -> str:
     # POSIX class mapping (inside [...])
     _POSIX = {
         "[:alnum:]": "a-zA-Z0-9",
+        "[:^alnum:]": "^a-zA-Z0-9",
         "[:alpha:]": "a-zA-Z",
+        "[:^alpha:]": "^a-zA-Z",
         "[:ascii:]": "\\x00-\\x7f",
+        "[:^ascii:]": "^\\x00-\\x7f",
         "[:blank:]": " \\t",
+        "[:^blank:]": "^ \\t",
         "[:cntrl:]": "\\x00-\\x1f\\x7f",
+        "[:^cntrl:]": "^\\x00-\\x1f\\x7f",
         "[:digit:]": "0-9",
+        "[:^digit:]": "^0-9",
         "[:graph:]": "!-~",
+        "[:^graph:]": "^!-~",
         "[:lower:]": "a-z",
+        "[:^lower:]": "^a-z",
         "[:print:]": " -~",
+        "[:^print:]": "^ -~",
         "[:punct:]": "!-/:-@[-`{-~",
+        "[:^punct:]": "^!-/:-@[-`{-~",
         "[:space:]": " \\t\\n\\r\\f\\v",
+        "[:^space:]": "^ \\t\\n\\r\\f\\v",
         "[:upper:]": "A-Z",
+        "[:^upper:]": "^A-Z",
         "[:word:]": "a-zA-Z0-9_",
+        "[:^word:]": "^a-zA-Z0-9_",
         "[:xdigit:]": "0-9a-fA-F",
+        "[:^xdigit:]": "^0-9a-fA-F",
     }
 
     # Replace POSIX classes inside character classes
