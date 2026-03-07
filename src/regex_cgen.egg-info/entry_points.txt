@@ -1,0 +1,2 @@
+[console_scripts]
+regex-cgen = regex_cgen.cli:main

@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: regex-cgen
+Version: 0.1.0
+Summary: Regex to C code generator
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Dynamic: license-file
+
+# regex-cgen
