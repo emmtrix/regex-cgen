@@ -66,6 +66,9 @@ MAXREPEAT = sre_parse.MAXREPEAT
 # Limit to prevent runaway DFA construction
 _MAX_DFA_STATES = 10_000
 
+# Limit for bit-parallel NFA (generated table is positions × 256 entries)
+_MAX_BITNFA_POSITIONS = 256
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -1085,6 +1088,11 @@ def compile_nfa(pattern: str, flags: str = "", encoding: str = "utf8") -> dict:
     builder, start, accept = _build_nfa(pattern, flags, encoding)
 
     num_positions = builder._next
+    if num_positions > _MAX_BITNFA_POSITIONS:
+        raise ValueError(
+            f"NFA has {num_positions} positions (limit: {_MAX_BITNFA_POSITIONS}); "
+            "use the DFA engine for this pattern"
+        )
 
     # Epsilon closure of start state → initial bitset
     initial_closure = _epsilon_closure({start}, builder.epsilon)
