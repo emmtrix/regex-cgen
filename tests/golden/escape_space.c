@@ -4,19 +4,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint8_t regex_transitions[2][256] = {
+static const uint8_t regex_transitions[3][256] = {
     /* state 0 */ { 0 },
-    /* states 1, 2 */ { [9] = 2, [10] = 2, [12] = 2, [13] = 2, [' '] = 2 },
-};
-
-static const uint8_t regex_row_map[3] = {
-    0, 1, 1
+    /* state 1 */ { [9] = 2, [10] = 2, [12] = 2, [13] = 2, [' '] = 2 },
+    /* state 2 */ { [9] = 2, [10] = 2, [12] = 2, [13] = 2, [' '] = 2 },
 };
 
 bool regex_match(const char *input, size_t len) {
     uint8_t state = 1;
     for (size_t i = 0; i < len; i++) {
-        state = regex_transitions[regex_row_map[state]][(unsigned char)input[i]];
+        state = regex_transitions[state][(unsigned char)input[i]];
     }
     return state >= 2;
 }

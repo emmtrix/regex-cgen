@@ -40,6 +40,8 @@ CASES: list[tuple[str, str, dict]] = [
     ("encoding_bytes.c",       r"[\x80-\xff]+",           {"encoding": "bytes"}),
     ("prefix.c",               r"[a-z]+",                 {"prefix": "my_matcher"}),
     ("emit_main.c",            r"\d+",                    {"emit_main": True}),
+    ("alphabet_compression.c", r"hello",                  {"alphabet_compression": "yes"}),
+    ("row_dedup.c",            r"hello",                  {"row_dedup": "yes"}),
 ]
 
 
