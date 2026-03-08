@@ -41,6 +41,33 @@ def main(argv: list[str] | None = None) -> None:
         default="utf8",
         help="Input encoding: utf8 (default, Unicode-aware) or bytes (raw byte semantics)",
     )
+    parser.add_argument(
+        "--row-dedup",
+        choices=["yes", "no", "auto"],
+        default="auto",
+        help=(
+            "Transition-row deduplication: yes (always), no (never), "
+            "auto (when table exceeds --size-threshold; default)"
+        ),
+    )
+    parser.add_argument(
+        "--alphabet-compression",
+        choices=["yes", "no", "auto"],
+        default="auto",
+        help=(
+            "Alphabet compression into equivalence classes: yes (always), "
+            "no (never), auto (when table exceeds --size-threshold; default)"
+        ),
+    )
+    parser.add_argument(
+        "--size-threshold",
+        type=int,
+        default=8192,
+        help=(
+            "Table-size threshold (cells = states × 256) for auto mode "
+            "(default: 8192)"
+        ),
+    )
 
     args = parser.parse_args(argv)
 
@@ -51,6 +78,9 @@ def main(argv: list[str] | None = None) -> None:
             emit_main=args.emit_main,
             prefix=args.prefix,
             encoding=args.encoding,
+            row_dedup=args.row_dedup,
+            alphabet_compression=args.alphabet_compression,
+            size_threshold=args.size_threshold,
         )
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)

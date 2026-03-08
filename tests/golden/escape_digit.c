@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint8_t regex_transitions[11][256] = {
-    /* states 0, 11 */ { 0 },
+static const uint8_t regex_transitions[12][256] = {
+    /* state 0 */ { 0 },
     /* state 1 */ { ['0'] = 9, ['1'] = 9, ['2'] = 9, ['3'] = 9, ['4'] = 9, ['5'] = 9, ['6'] = 9, ['7'] = 9, ['8'] = 9, ['9'] = 9 },
     /* state 2 */ { ['0'] = 10, ['1'] = 10, ['2'] = 10, ['3'] = 10, ['4'] = 10, ['5'] = 10, ['6'] = 10, ['7'] = 10, ['8'] = 10, ['9'] = 10 },
     /* state 3 */ { ['-'] = 2 },
@@ -16,16 +16,13 @@ static const uint8_t regex_transitions[11][256] = {
     /* state 8 */ { ['0'] = 7, ['1'] = 7, ['2'] = 7, ['3'] = 7, ['4'] = 7, ['5'] = 7, ['6'] = 7, ['7'] = 7, ['8'] = 7, ['9'] = 7 },
     /* state 9 */ { ['0'] = 8, ['1'] = 8, ['2'] = 8, ['3'] = 8, ['4'] = 8, ['5'] = 8, ['6'] = 8, ['7'] = 8, ['8'] = 8, ['9'] = 8 },
     /* state 10 */ { ['0'] = 11, ['1'] = 11, ['2'] = 11, ['3'] = 11, ['4'] = 11, ['5'] = 11, ['6'] = 11, ['7'] = 11, ['8'] = 11, ['9'] = 11 },
-};
-
-static const uint8_t regex_row_map[12] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0
+    /* state 11 */ { 0 },
 };
 
 bool regex_match(const char *input, size_t len) {
     uint8_t state = 1;
     for (size_t i = 0; i < len; i++) {
-        state = regex_transitions[regex_row_map[state]][(unsigned char)input[i]];
+        state = regex_transitions[state][(unsigned char)input[i]];
     }
     return state >= 11;
 }
