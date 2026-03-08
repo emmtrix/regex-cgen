@@ -47,13 +47,16 @@ def _load_test_params() -> list:
     return params
 
 
+@pytest.mark.parametrize("engine", ["dfa", "bitnfa"])
 @pytest.mark.parametrize("pattern,flags,subjects", _load_test_params())
-def test_fullmatch(pattern: str, flags: str, subjects: list[dict], tmp_path: Path) -> None:
+def test_fullmatch(
+    pattern: str, flags: str, subjects: list[dict], engine: str, tmp_path: Path
+) -> None:
     """Generate → compile → execute for every subject of *pattern*."""
 
     # 1. Generate C code
     try:
-        c_code = generate(pattern, flags=flags, emit_main=True)
+        c_code = generate(pattern, flags=flags, emit_main=True, engine=engine)
     except (ValueError, Exception) as exc:
         pytest.skip(f"Unsupported pattern: {exc}")
 
@@ -89,7 +92,7 @@ def test_fullmatch(pattern: str, flags: str, subjects: list[dict], tmp_path: Pat
 
         actual = run.returncode == 0
         assert actual == expected, (
-            f"Pattern {pattern!r} (flags={flags!r}) with input {inp!r}: "
+            f"Pattern {pattern!r} (flags={flags!r}, engine={engine}) with input {inp!r}: "
             f"expected {'match' if expected else 'no match'}, "
             f"got {'match' if actual else 'no match'}"
         )
