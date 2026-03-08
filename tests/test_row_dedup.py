@@ -18,7 +18,6 @@ from regex_cgen import generate
 from regex_cgen.codegen import generate_c_code
 from regex_cgen.compiler import compile_regex
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
