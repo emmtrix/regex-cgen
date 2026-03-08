@@ -22,12 +22,10 @@ static const uint8_t dfa_row_map[12] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0
 };
 
-#define ACCEPT_BASE 11
-
 bool regex_match(const char *input, size_t len) {
     uint8_t state = 1;
     for (size_t i = 0; i < len; i++) {
         state = dfa_transitions[dfa_row_map[state]][(unsigned char)input[i]];
     }
-    return state >= ACCEPT_BASE;
+    return state >= 11;
 }

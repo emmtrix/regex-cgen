@@ -16,10 +16,11 @@ def generate_c_code(
     The generated code contains:
 
     * A ``static const`` transition table (``dfa_transitions``).
-    * Either a ``#define ACCEPT_BASE`` constant (when the DFA dict contains an
-      ``accept_base`` key, e.g. from :func:`~regex_cgen.compiler.compile_regex`)
-      or a ``static const bool dfa_accept[]`` table (fallback for synthetic
-      DFA dicts).
+    * Either an inline numeric comparison ``return state >= <accept_base>;``
+      (when the DFA dict contains an ``accept_base`` key, e.g. from
+      :func:`~regex_cgen.compiler.compile_regex`) or a
+      ``static const bool dfa_accept[]`` table (fallback for synthetic DFA
+      dicts).
     * A match function (default name ``regex_match``) with the signature::
 
           bool regex_match(const char *input, size_t len);
@@ -86,17 +87,13 @@ def generate_c_code(
         lines.append("};")
         lines.append("")
 
-    if accept_base is not None:
-        # Accepting states are packed at the top of the state space;
-        # a single comparison replaces the dfa_accept[] table lookup.
-        lines.append(f"#define ACCEPT_BASE {accept_base}")
-    else:
+    if accept_base is None:
         # Fallback for DFA dicts without accept_base (e.g. synthetic dicts).
         accept_vals = ["true" if s in accept else "false" for s in range(n)]
         lines.append(f"static const bool dfa_accept[{n}] = {{")
         lines.append(f"    {', '.join(accept_vals)}")
         lines.append("};")
-    lines.append("")
+        lines.append("")
 
     # Match function
     lines.append(f"bool {func_name}(const char *input, size_t len) {{")
@@ -112,7 +109,7 @@ def generate_c_code(
         )
     lines.append("    }")
     if accept_base is not None:
-        lines.append("    return state >= ACCEPT_BASE;")
+        lines.append(f"    return state >= {accept_base};")
     else:
         lines.append("    return dfa_accept[state];")
     lines.append("}")
