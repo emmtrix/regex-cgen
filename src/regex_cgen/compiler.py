@@ -883,6 +883,46 @@ def _minimize_dfa(dfa: dict) -> dict:
     }
 
 
+def _reorder_accept_states(dfa: dict) -> dict:
+    """Reorder states so all accepting states have the highest indices.
+
+    After reordering ``state >= accept_base`` is true iff *state* is an
+    accepting state, where ``accept_base`` equals the number of non-accepting
+    states.  The dead state (index 0 after :func:`_renumber`) stays at 0.
+    The ``accept_base`` value is stored in the returned dict so that
+    :func:`generate_c_code` can emit the appropriate C constant.
+    """
+    n = dfa["num_states"]
+    accept = set(dfa["accept"])
+    trans = dfa["transitions"]
+    initial = dfa["initial"]
+
+    # Preserve the natural order within each group so that the dead state (0)
+    # stays first among non-accepting states and the initial state keeps its
+    # relative position.
+    non_accept = [s for s in range(n) if s not in accept]
+    accept_list = [s for s in range(n) if s in accept]
+
+    mapping: dict[int, int] = {}
+    for new_id, old_id in enumerate(non_accept + accept_list):
+        mapping[old_id] = new_id
+
+    new_trans: dict[tuple[int, int], int] = {}
+    for (s, b), t in trans.items():
+        new_trans[(mapping[s], b)] = mapping[t]
+
+    new_accept = frozenset(mapping[s] for s in accept)
+    accept_base = len(non_accept)
+
+    return {
+        "num_states": n,
+        "initial": mapping[initial],
+        "accept": new_accept,
+        "transitions": new_trans,
+        "accept_base": accept_base,
+    }
+
+
 def _renumber(dfa: dict) -> dict:
     """Renumber so that dead-state = 0 and initial-state = 1."""
     n = dfa["num_states"]
@@ -1001,8 +1041,11 @@ def _preprocess_pattern(pattern: str) -> str:
 def compile_regex(pattern: str, flags: str = "", encoding: str = "utf8") -> dict:
     """Compile *pattern* to a minimised, renumbered DFA.
 
-    Returns a dict with ``num_states``, ``initial``, ``accept``, and
-    ``transitions`` keys.
+    Returns a dict with ``num_states``, ``initial``, ``accept``,
+    ``transitions``, and ``accept_base`` keys.  The ``accept_base`` value is
+    the index of the first accepting state; all states with index
+    ``>= accept_base`` are accepting, and all states with index
+    ``< accept_base`` are non-accepting.
 
     Parameters
     ----------
@@ -1040,4 +1083,5 @@ def compile_regex(pattern: str, flags: str = "", encoding: str = "utf8") -> dict
     dfa = _add_dead_state(dfa)
     dfa = _minimize_dfa(dfa)
     dfa = _renumber(dfa)
+    dfa = _reorder_accept_states(dfa)
     return dfa

@@ -16,7 +16,10 @@ def generate_c_code(
     The generated code contains:
 
     * A ``static const`` transition table (``dfa_transitions``).
-    * A ``static const`` accept-state table (``dfa_accept``).
+    * Either a ``#define ACCEPT_BASE`` constant (when the DFA dict contains an
+      ``accept_base`` key, e.g. from :func:`~regex_cgen.compiler.compile_regex`)
+      or a ``static const bool dfa_accept[]`` table (fallback for synthetic
+      DFA dicts).
     * A match function (default name ``regex_match``) with the signature::
 
           bool regex_match(const char *input, size_t len);
@@ -29,6 +32,7 @@ def generate_c_code(
     initial = dfa["initial"]
     accept = dfa["accept"]
     trans = dfa["transitions"]
+    accept_base: int | None = dfa.get("accept_base")
 
     # Choose the narrowest unsigned type that fits
     if n <= 256:
@@ -82,11 +86,16 @@ def generate_c_code(
         lines.append("};")
         lines.append("")
 
-    # Accept table
-    accept_vals = ["true" if s in accept else "false" for s in range(n)]
-    lines.append(f"static const bool dfa_accept[{n}] = {{")
-    lines.append(f"    {', '.join(accept_vals)}")
-    lines.append("};")
+    if accept_base is not None:
+        # Accepting states are packed at the top of the state space;
+        # a single comparison replaces the dfa_accept[] table lookup.
+        lines.append(f"#define ACCEPT_BASE {accept_base}")
+    else:
+        # Fallback for DFA dicts without accept_base (e.g. synthetic dicts).
+        accept_vals = ["true" if s in accept else "false" for s in range(n)]
+        lines.append(f"static const bool dfa_accept[{n}] = {{")
+        lines.append(f"    {', '.join(accept_vals)}")
+        lines.append("};")
     lines.append("")
 
     # Match function
@@ -102,7 +111,10 @@ def generate_c_code(
             "        state = dfa_transitions[state][(unsigned char)input[i]];"
         )
     lines.append("    }")
-    lines.append("    return dfa_accept[state];")
+    if accept_base is not None:
+        lines.append("    return state >= ACCEPT_BASE;")
+    else:
+        lines.append("    return dfa_accept[state];")
     lines.append("}")
 
     if emit_main:

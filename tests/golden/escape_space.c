@@ -13,14 +13,12 @@ static const uint8_t dfa_row_map[3] = {
     0, 1, 1
 };
 
-static const bool dfa_accept[3] = {
-    false, false, true
-};
+#define ACCEPT_BASE 2
 
 bool regex_match(const char *input, size_t len) {
     uint8_t state = 1;
     for (size_t i = 0; i < len; i++) {
         state = dfa_transitions[dfa_row_map[state]][(unsigned char)input[i]];
     }
-    return dfa_accept[state];
+    return state >= ACCEPT_BASE;
 }
