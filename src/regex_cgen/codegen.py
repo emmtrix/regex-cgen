@@ -8,22 +8,22 @@ from .compiler import compile_regex
 def generate_c_code(
     dfa: dict,
     *,
-    func_name: str = "regex_match",
+    prefix: str = "regex",
     emit_main: bool = False,
 ) -> str:
     """Emit C code for a table-driven DFA matcher.
 
     The generated code contains:
 
-    * A ``static const`` transition table (``dfa_transitions``).
+    * A ``static const`` transition table (``{prefix}_transitions``).
     * Either an inline numeric comparison ``return state >= <accept_base>;``
       (when the DFA dict contains an ``accept_base`` key, e.g. from
       :func:`~regex_cgen.compiler.compile_regex`) or a
-      ``static const bool dfa_accept[]`` table (fallback for synthetic DFA
-      dicts).
-    * A match function (default name ``regex_match``) with the signature::
+      ``static const bool {prefix}_accept[]`` table (fallback for synthetic
+      DFA dicts).
+    * A match function named ``{prefix}_match`` with the signature::
 
-          bool regex_match(const char *input, size_t len);
+          bool {prefix}_match(const char *input, size_t len);
 
     When *emit_main* is ``True`` an additional ``main`` function is emitted
     that reads ``argv[1]`` and returns exit-code **0** on match, **1** on
@@ -67,14 +67,14 @@ def generate_c_code(
 
     num_unique = len(unique_rows)
     lines.append(
-        f"static const {state_t} dfa_transitions[{num_unique}][256] = {{"
+        f"static const {state_t} {prefix}_transitions[{num_unique}][256] = {{"
     )
     for row in unique_rows:
         lines.append(f"    {{{', '.join(str(v) for v in row)}}},")
     lines.append("};")
     lines.append("")
 
-    # Row-index map: state → index into dfa_transitions (only when needed)
+    # Row-index map: state → index into {prefix}_transitions (only when needed)
     if num_unique < n:
         if num_unique <= 256:
             row_t = "uint8_t"
@@ -82,7 +82,7 @@ def generate_c_code(
             row_t = "uint16_t"
         else:
             row_t = "uint32_t"
-        lines.append(f"static const {row_t} dfa_row_map[{n}] = {{")
+        lines.append(f"static const {row_t} {prefix}_row_map[{n}] = {{")
         lines.append(f"    {', '.join(str(i) for i in state_to_row)}")
         lines.append("};")
         lines.append("")
@@ -90,28 +90,30 @@ def generate_c_code(
     if accept_base is None:
         # Fallback for DFA dicts without accept_base (e.g. synthetic dicts).
         accept_vals = ["true" if s in accept else "false" for s in range(n)]
-        lines.append(f"static const bool dfa_accept[{n}] = {{")
+        lines.append(f"static const bool {prefix}_accept[{n}] = {{")
         lines.append(f"    {', '.join(accept_vals)}")
         lines.append("};")
         lines.append("")
 
     # Match function
+    func_name = f"{prefix}_match"
     lines.append(f"bool {func_name}(const char *input, size_t len) {{")
     lines.append(f"    {state_t} state = {initial};")
     lines.append("    for (size_t i = 0; i < len; i++) {")
     if num_unique < n:
         lines.append(
-            "        state = dfa_transitions[dfa_row_map[state]][(unsigned char)input[i]];"
+            f"        state = {prefix}_transitions"
+            f"[{prefix}_row_map[state]][(unsigned char)input[i]];"
         )
     else:
         lines.append(
-            "        state = dfa_transitions[state][(unsigned char)input[i]];"
+            f"        state = {prefix}_transitions[state][(unsigned char)input[i]];"
         )
     lines.append("    }")
     if accept_base is not None:
         lines.append(f"    return state >= {accept_base};")
     else:
-        lines.append("    return dfa_accept[state];")
+        lines.append(f"    return {prefix}_accept[state];")
     lines.append("}")
 
     if emit_main:
@@ -137,7 +139,7 @@ def generate(
     flags: str = "",
     *,
     emit_main: bool = False,
-    func_name: str = "regex_match",
+    prefix: str = "regex",
     encoding: str = "utf8",
 ) -> str:
     """High-level API: compile *pattern* and return generated C code.
@@ -152,12 +154,15 @@ def generate(
     emit_main:
         When ``True``, emit a ``main()`` function that reads ``argv[1]``
         and returns exit-code 0/1/2.
-    func_name:
-        Name of the generated C match function.
+    prefix:
+        Prefix for all generated C identifiers: arrays are named
+        ``{prefix}_transitions``, ``{prefix}_row_map``, ``{prefix}_accept``
+        and the match function is named ``{prefix}_match``.
+        Defaults to ``"regex"``.
     encoding:
         ``"utf8"`` (default) for Unicode/UTF-8 semantics; ``"bytes"`` for
         raw byte semantics where ``.`` matches any single byte and
         literals/classes operate on byte values 0-255.
     """
     dfa = compile_regex(pattern, flags, encoding=encoding)
-    return generate_c_code(dfa, func_name=func_name, emit_main=emit_main)
+    return generate_c_code(dfa, prefix=prefix, emit_main=emit_main)
