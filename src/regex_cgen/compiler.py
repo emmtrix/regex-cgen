@@ -1074,8 +1074,162 @@ def compile_regex(pattern: str, flags: str = "", encoding: str = "utf8") -> dict
     return dfa
 
 
+def _reduce_to_position_nfa(
+    builder: NFABuilder, start: int, accept: int
+) -> dict:
+    """Reduce a Thompson NFA to a position NFA (Glushkov-equivalent).
+
+    Eliminates epsilon-only intermediate states so that bit-positions are
+    assigned only to states with outgoing byte transitions and the accept
+    state.  After construction the NFA is pruned: positions that are not
+    forward-reachable from the initial set or that cannot reach any accept
+    position are removed, and the remaining positions are renumbered
+    contiguously starting at 0.
+
+    Returns the same dict format as :func:`compile_nfa`.
+    """
+
+    # -- Step 1: identify byte-states (states with outgoing byte transitions)
+    byte_states: set[int] = set()
+    for src, _b in builder.transitions:
+        byte_states.add(src)
+
+    # All relevant positions: byte-states plus the accept state.
+    # The accept state must keep a bit so the accept check works even when
+    # it has no outgoing byte transitions itself.
+    all_positions = sorted(byte_states | {accept})
+    old_to_new = {s: i for i, s in enumerate(all_positions)}
+    num_positions = len(all_positions)
+
+    # Pre-compute per-state outgoing bytes for fast lookup (same as _nfa_to_dfa)
+    state_bytes: dict[int, set[int]] = {}
+    for src, b in builder.transitions:
+        state_bytes.setdefault(src, set()).add(b)
+
+    # -- Step 2: initial bitset (ε-closure of start ∩ relevant positions)
+    start_closure = _epsilon_closure({start}, builder.epsilon)
+    initial_bits = 0
+    for s in start_closure:
+        if s in old_to_new:
+            initial_bits |= 1 << old_to_new[s]
+
+    # -- Step 3: accept bitset
+    # A position is accepting if the Thompson accept state is ε-reachable
+    # from it *or* if it is the accept state itself.
+    accept_bits = 0
+    for s in all_positions:
+        if accept in _epsilon_closure({s}, builder.epsilon):
+            accept_bits |= 1 << old_to_new[s]
+
+    # -- Step 4: transition masks using only the reduced position set
+    trans_masks: list[dict[int, int]] = [{} for _ in range(num_positions)]
+    for old_s in all_positions:
+        new_pos = old_to_new[old_s]
+        masks: dict[int, int] = {}
+        for b in state_bytes.get(old_s, ()):
+            dests = builder.transitions.get((old_s, b), set())
+            if dests:
+                closure = _epsilon_closure(dests, builder.epsilon)
+                bits = 0
+                for s in closure:
+                    if s in old_to_new:
+                        bits |= 1 << old_to_new[s]
+                if bits:
+                    masks[b] = bits
+        trans_masks[new_pos] = masks
+
+    # -- Step 5: reachability pruning using bitset arithmetic
+    #  (a) Forward reachability from the initial set.
+    reachable = initial_bits
+    prev = 0
+    while reachable != prev:
+        prev = reachable
+        p = reachable
+        while p:
+            pos = (p & -p).bit_length() - 1  # lowest set bit
+            p &= p - 1
+            for bits in trans_masks[pos].values():
+                reachable |= bits
+
+    #  (b) Backward reachability: positions from which some accept position
+    #      is reachable (including accept positions themselves).
+    #      Build reverse adjacency first.
+    reverse_adj: list[int] = [0] * num_positions
+    for p in range(num_positions):
+        for bits in trans_masks[p].values():
+            b = bits
+            while b:
+                q = (b & -b).bit_length() - 1
+                b &= b - 1
+                reverse_adj[q] |= 1 << p
+
+    productive = accept_bits
+    prev = 0
+    while productive != prev:
+        prev = productive
+        p = productive
+        while p:
+            pos = (p & -p).bit_length() - 1
+            p &= p - 1
+            productive |= reverse_adj[pos]
+
+    keep_mask = reachable & productive
+    keep = []
+    m = keep_mask
+    while m:
+        pos = (m & -m).bit_length() - 1
+        m &= m - 1
+        keep.append(pos)
+
+    # -- Step 6: renumber if any positions were pruned
+    if len(keep) < num_positions:
+        remap = {old: new for new, old in enumerate(keep)}
+        num_positions = len(keep)
+
+        new_initial = 0
+        for old in keep:
+            if initial_bits & (1 << old):
+                new_initial |= 1 << remap[old]
+
+        new_accept = 0
+        for old in keep:
+            if accept_bits & (1 << old):
+                new_accept |= 1 << remap[old]
+
+        new_trans: list[dict[int, int]] = []
+        for old in keep:
+            masks = trans_masks[old]
+            remapped: dict[int, int] = {}
+            for b, bits in masks.items():
+                new_bits = 0
+                remaining = bits & keep_mask
+                while remaining:
+                    q = (remaining & -remaining).bit_length() - 1
+                    remaining &= remaining - 1
+                    new_bits |= 1 << remap[q]
+                if new_bits:
+                    remapped[b] = new_bits
+            new_trans.append(remapped)
+
+        initial_bits = new_initial
+        accept_bits = new_accept
+        trans_masks = new_trans
+
+    return {
+        "num_positions": num_positions,
+        "initial": initial_bits,
+        "accept": accept_bits,
+        "trans_masks": trans_masks,
+    }
+
+
 def compile_nfa(pattern: str, flags: str = "", encoding: str = "utf8") -> dict:
     """Compile *pattern* to NFA data for bit-parallel simulation.
+
+    The Thompson NFA is first reduced to a position NFA (Glushkov-
+    equivalent) so that only states with actual byte transitions occupy
+    bit-positions.  This typically halves the number of required bits
+    compared to the raw Thompson NFA.
 
     Returns a dict with:
 
@@ -1087,38 +1241,13 @@ def compile_nfa(pattern: str, flags: str = "", encoding: str = "utf8") -> dict:
     """
     builder, start, accept = _build_nfa(pattern, flags, encoding)
 
-    num_positions = builder._next
-    if num_positions > _MAX_BITNFA_POSITIONS:
+    nfa = _reduce_to_position_nfa(builder, start, accept)
+
+    if nfa["num_positions"] > _MAX_BITNFA_POSITIONS:
         raise ValueError(
-            f"NFA has {num_positions} positions (limit: {_MAX_BITNFA_POSITIONS}); "
+            f"NFA has {nfa['num_positions']} positions "
+            f"(limit: {_MAX_BITNFA_POSITIONS}); "
             "use the DFA engine for this pattern"
         )
 
-    # Epsilon closure of start state → initial bitset
-    initial_closure = _epsilon_closure({start}, builder.epsilon)
-    initial_bits = 0
-    for s in initial_closure:
-        initial_bits |= 1 << s
-
-    accept_bits = 1 << accept
-
-    # For each position, compute transition masks: byte → dest bitset
-    trans_masks: list[dict[int, int]] = []
-    for p in range(num_positions):
-        masks: dict[int, int] = {}
-        for b in range(256):
-            dests = builder.transitions.get((p, b), set())
-            if dests:
-                closure = _epsilon_closure(dests, builder.epsilon)
-                bits = 0
-                for s in closure:
-                    bits |= 1 << s
-                masks[b] = bits
-        trans_masks.append(masks)
-
-    return {
-        "num_positions": num_positions,
-        "initial": initial_bits,
-        "accept": accept_bits,
-        "trans_masks": trans_masks,
-    }
+    return nfa

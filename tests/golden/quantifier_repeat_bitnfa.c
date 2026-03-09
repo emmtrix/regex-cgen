@@ -4,36 +4,29 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint16_t regex_trans[12][256] = {
-    /* position 0 */ { ['a'] = 0x0006u },
-    /* position 1 */ { 0 },
-    /* position 2 */ { ['a'] = 0x0778u },
+static const uint8_t regex_trans[5][256] = {
+    /* position 0 */ { ['a'] = 0x02u },
+    /* position 1 */ { ['a'] = 0x1cu },
+    /* position 2 */ { ['a'] = 0x18u },
     /* position 3 */ { 0 },
-    /* position 4 */ { 0 },
-    /* position 5 */ { 0 },
-    /* position 6 */ { ['a'] = 0x07a0u },
-    /* position 7 */ { 0 },
-    /* position 8 */ { 0 },
-    /* position 9 */ { 0 },
-    /* position 10 */ { ['a'] = 0x0a00u },
-    /* position 11 */ { 0 },
+    /* position 4 */ { ['a'] = 0x08u },
 };
 
 /* regex:    "a{2,4}"
  * flags:    ""
  * encoding: utf8
- * engine:   bitnfa (uint16_t)
+ * engine:   bitnfa (uint8_t)
  */
 bool regex_match(const char *input, size_t len) {
-    uint16_t state = 0x0001u;
+    uint8_t state = 0x01u;
     for (size_t i = 0; i < len; i++) {
         unsigned char b = (unsigned char)input[i];
-        uint16_t next = 0;
-        if (state & 0x0001u) next |= regex_trans[0][b];
-        if (state & 0x0004u) next |= regex_trans[2][b];
-        if (state & 0x0040u) next |= regex_trans[6][b];
-        if (state & 0x0400u) next |= regex_trans[10][b];
+        uint8_t next = 0;
+        if (state & 0x01u) next |= regex_trans[0][b];
+        if (state & 0x02u) next |= regex_trans[1][b];
+        if (state & 0x04u) next |= regex_trans[2][b];
+        if (state & 0x10u) next |= regex_trans[4][b];
         state = next;
     }
-    return (state & 0x0200u) != 0;
+    return (state & 0x08u) != 0;
 }

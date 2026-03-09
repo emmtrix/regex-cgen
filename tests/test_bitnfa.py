@@ -59,7 +59,7 @@ def test_variant_uint8() -> None:
 
 def test_variant_uint16() -> None:
     """Pattern with 9-16 NFA positions must use uint16_t."""
-    nfa = compile_nfa("hello")
+    nfa = compile_nfa("helloworld")
     assert 8 < nfa["num_positions"] <= 16
     code = generate_bitnfa_c_code(nfa)
     assert "uint16_t" in code
@@ -68,7 +68,7 @@ def test_variant_uint16() -> None:
 
 def test_variant_uint32() -> None:
     """Pattern with 17-32 NFA positions must use uint32_t (single word)."""
-    nfa = compile_nfa("cat|dog|fish")
+    nfa = compile_nfa("abcdefghijklmnopq")
     assert 16 < nfa["num_positions"] <= 32
     code = generate_bitnfa_c_code(nfa)
     assert "uint32_t" in code
@@ -78,7 +78,7 @@ def test_variant_uint32() -> None:
 
 def test_variant_uint32_array() -> None:
     """Pattern with >32 NFA positions must use uint32_t array."""
-    nfa = compile_nfa("abcdefghijklmnopq")
+    nfa = compile_nfa("a{33}")
     assert nfa["num_positions"] > 32
     code = generate_bitnfa_c_code(nfa)
     m = re.search(r"regex_trans\[\d+\]\[256\]\[(\d+)\]", code)
@@ -94,7 +94,7 @@ def test_variant_uint32_array() -> None:
 
 def test_no_dynamic_alloc() -> None:
     """Generated code must not contain malloc, calloc, free, or realloc."""
-    for pat in ["ab", "hello", "cat|dog|fish", "abcdefghijklmnopq"]:
+    for pat in ["ab", "helloworld", "abcdefghijklmnopq", "a{33}"]:
         code = generate(pat, engine="bitnfa")
         for fn in ("malloc", "calloc", "free", "realloc"):
             assert fn not in code, f"{fn} found in generated code for {pat!r}"
@@ -108,7 +108,7 @@ def test_metadata_comment() -> None:
 
 def test_hot_loop_unrolled_uint32_array() -> None:
     """The uint32_array hot loop must contain no loops over words."""
-    nfa = compile_nfa("abcdefghijklmnopq")
+    nfa = compile_nfa("a{33}")
     code = generate_bitnfa_c_code(nfa)
     # The main for-loop is the only loop; word operations are unrolled
     loop_count = code.count("for (")
@@ -121,6 +121,53 @@ def test_prefix() -> None:
     assert "my_re_trans" in code
     assert "my_re_match" in code
     assert "regex_" not in code
+
+
+# ---------------------------------------------------------------------------
+# Position-NFA reduction tests
+# ---------------------------------------------------------------------------
+
+
+def test_position_reduction_fewer_positions() -> None:
+    """Position NFA must have fewer positions than the raw Thompson NFA."""
+    from regex_cgen.compiler import _build_nfa
+
+    for pat in ["hello", "abc", "(a|b)*c", "a{2,4}", "cat|dog"]:
+        builder, _start, _accept = _build_nfa(pat)
+        thompson_count = builder._next
+        nfa = compile_nfa(pat)
+        assert nfa["num_positions"] < thompson_count, (
+            f"Pattern {pat!r}: position NFA ({nfa['num_positions']}) "
+            f"not smaller than Thompson NFA ({thompson_count})"
+        )
+
+
+def test_position_reduction_no_empty_rows() -> None:
+    """Every position in the reduced NFA (except accept) should have transitions."""
+    for pat in ["ab", "hello", "(a|b)*c", "[a-z]+", r"\d{3}"]:
+        nfa = compile_nfa(pat)
+        empty_count = sum(
+            1 for masks in nfa["trans_masks"] if not masks
+        )
+        # At most one empty row (the accept position)
+        assert empty_count <= 1, (
+            f"Pattern {pat!r}: {empty_count} empty rows in position NFA"
+        )
+
+
+def test_position_reduction_contiguous_bits() -> None:
+    """Bit positions must be contiguous (0..N-1) with no gaps."""
+    for pat in ["abc", "a|b|c", "(xy)+", r"\w+"]:
+        nfa = compile_nfa(pat)
+        n = nfa["num_positions"]
+        all_bits = nfa["initial"] | nfa["accept"]
+        for masks in nfa["trans_masks"]:
+            for bits in masks.values():
+                all_bits |= bits
+        # All referenced bits must be within [0, n)
+        assert all_bits < (1 << n), (
+            f"Pattern {pat!r}: bits exceed num_positions={n}"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -156,16 +203,16 @@ def test_uint8_correctness(
 @pytest.mark.parametrize(
     "pattern,inp,expected",
     [
-        # uint16 patterns (9-16 positions)
-        ("hello", "hello", True),
-        ("hello", "world", False),
-        ("hello", "hell", False),
-        ("hello", "helloo", False),
-        ("a{2,4}", "aa", True),
-        ("a{2,4}", "aaa", True),
-        ("a{2,4}", "aaaa", True),
-        ("a{2,4}", "a", False),
-        ("a{2,4}", "aaaaa", False),
+        # uint16 patterns (9-16 positions after position-NFA reduction)
+        ("helloworld", "helloworld", True),
+        ("helloworld", "helloworl", False),
+        ("helloworld", "helloworldx", False),
+        ("helloworld", "", False),
+        ("a{2,8}", "aa", True),
+        ("a{2,8}", "aaaaaaaa", True),
+        ("a{2,8}", "a", False),
+        ("a{2,8}", "aaaaaaaaa", False),
+        ("cat|dog|fish", "cat", True),
     ],
 )
 def test_uint16_correctness(
@@ -181,12 +228,15 @@ def test_uint16_correctness(
 @pytest.mark.parametrize(
     "pattern,inp,expected",
     [
-        # uint32 patterns (17-32 positions)
-        ("cat|dog|fish", "cat", True),
-        ("cat|dog|fish", "dog", True),
-        ("cat|dog|fish", "fish", True),
-        ("cat|dog|fish", "bird", False),
-        ("cat|dog|fish", "", False),
+        # uint32 patterns (17-32 positions after position-NFA reduction)
+        ("abcdefghijklmnopq", "abcdefghijklmnopq", True),
+        ("abcdefghijklmnopq", "abcdefghijklmnop", False),
+        ("abcdefghijklmnopq", "abcdefghijklmnopqr", False),
+        ("abcdefghijklmnopq", "", False),
+        ("[a-z]{20}", "abcdefghijklmnopqrst", True),
+        ("cat|dog|fish|bird|snake|horse", "cat", True),
+        ("cat|dog|fish|bird|snake|horse", "horse", True),
+        ("cat|dog|fish|bird|snake|horse", "lion", False),
     ],
 )
 def test_uint32_correctness(
@@ -202,11 +252,11 @@ def test_uint32_correctness(
 @pytest.mark.parametrize(
     "pattern,inp,expected",
     [
-        # uint32_array patterns (>32 positions)
-        ("abcdefghijklmnopq", "abcdefghijklmnopq", True),
-        ("abcdefghijklmnopq", "abcdefghijklmnop", False),
-        ("abcdefghijklmnopq", "abcdefghijklmnopqr", False),
-        ("abcdefghijklmnopq", "", False),
+        # uint32_array patterns (>32 positions after position-NFA reduction)
+        ("a{33}", "a" * 33, True),
+        ("a{33}", "a" * 32, False),
+        ("a{33}", "a" * 34, False),
+        ("a{33}", "", False),
     ],
 )
 def test_uint32_array_correctness(

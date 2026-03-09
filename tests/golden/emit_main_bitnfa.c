@@ -6,11 +6,9 @@
 #include <string.h>
 #include <stdio.h>
 
-static const uint8_t regex_trans[4][256] = {
+static const uint8_t regex_trans[2][256] = {
     /* position 0 */ { 0 },
-    /* position 1 */ { 0 },
-    /* position 2 */ { ['0'] = 0x0eu, ['1'] = 0x0eu, ['2'] = 0x0eu, ['3'] = 0x0eu, ['4'] = 0x0eu, ['5'] = 0x0eu, ['6'] = 0x0eu, ['7'] = 0x0eu, ['8'] = 0x0eu, ['9'] = 0x0eu },
-    /* position 3 */ { 0 },
+    /* position 1 */ { ['0'] = 0x03u, ['1'] = 0x03u, ['2'] = 0x03u, ['3'] = 0x03u, ['4'] = 0x03u, ['5'] = 0x03u, ['6'] = 0x03u, ['7'] = 0x03u, ['8'] = 0x03u, ['9'] = 0x03u },
 };
 
 /* regex:    "\d+"
@@ -19,14 +17,14 @@ static const uint8_t regex_trans[4][256] = {
  * engine:   bitnfa (uint8_t)
  */
 bool regex_match(const char *input, size_t len) {
-    uint8_t state = 0x05u;
+    uint8_t state = 0x02u;
     for (size_t i = 0; i < len; i++) {
         unsigned char b = (unsigned char)input[i];
         uint8_t next = 0;
-        if (state & 0x04u) next |= regex_trans[2][b];
+        if (state & 0x02u) next |= regex_trans[1][b];
         state = next;
     }
-    return (state & 0x02u) != 0;
+    return (state & 0x01u) != 0;
 }
 
 int main(int argc, char *argv[]) {

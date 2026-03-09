@@ -4,11 +4,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint8_t my_matcher_trans[4][256] = {
+static const uint8_t my_matcher_trans[2][256] = {
     /* position 0 */ { 0 },
-    /* position 1 */ { 0 },
-    /* position 2 */ { ['a'] = 0x0eu, ['b'] = 0x0eu, ['c'] = 0x0eu, ['d'] = 0x0eu, ['e'] = 0x0eu, ['f'] = 0x0eu, ['g'] = 0x0eu, ['h'] = 0x0eu, ['i'] = 0x0eu, ['j'] = 0x0eu, ['k'] = 0x0eu, ['l'] = 0x0eu, ['m'] = 0x0eu, ['n'] = 0x0eu, ['o'] = 0x0eu, ['p'] = 0x0eu, ['q'] = 0x0eu, ['r'] = 0x0eu, ['s'] = 0x0eu, ['t'] = 0x0eu, ['u'] = 0x0eu, ['v'] = 0x0eu, ['w'] = 0x0eu, ['x'] = 0x0eu, ['y'] = 0x0eu, ['z'] = 0x0eu },
-    /* position 3 */ { 0 },
+    /* position 1 */ { ['a'] = 0x03u, ['b'] = 0x03u, ['c'] = 0x03u, ['d'] = 0x03u, ['e'] = 0x03u, ['f'] = 0x03u, ['g'] = 0x03u, ['h'] = 0x03u, ['i'] = 0x03u, ['j'] = 0x03u, ['k'] = 0x03u, ['l'] = 0x03u, ['m'] = 0x03u, ['n'] = 0x03u, ['o'] = 0x03u, ['p'] = 0x03u, ['q'] = 0x03u, ['r'] = 0x03u, ['s'] = 0x03u, ['t'] = 0x03u, ['u'] = 0x03u, ['v'] = 0x03u, ['w'] = 0x03u, ['x'] = 0x03u, ['y'] = 0x03u, ['z'] = 0x03u },
 };
 
 /* regex:    "[a-z]+"
@@ -17,12 +15,12 @@ static const uint8_t my_matcher_trans[4][256] = {
  * engine:   bitnfa (uint8_t)
  */
 bool my_matcher_match(const char *input, size_t len) {
-    uint8_t state = 0x05u;
+    uint8_t state = 0x02u;
     for (size_t i = 0; i < len; i++) {
         unsigned char b = (unsigned char)input[i];
         uint8_t next = 0;
-        if (state & 0x04u) next |= my_matcher_trans[2][b];
+        if (state & 0x02u) next |= my_matcher_trans[1][b];
         state = next;
     }
-    return (state & 0x02u) != 0;
+    return (state & 0x01u) != 0;
 }

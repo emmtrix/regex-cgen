@@ -4,11 +4,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint8_t regex_trans[4][256] = {
+static const uint8_t regex_trans[2][256] = {
     /* position 0 */ { 0 },
-    /* position 1 */ { 0 },
-    /* position 2 */ { [9] = 0x0eu, [10] = 0x0eu, [12] = 0x0eu, [13] = 0x0eu, [' '] = 0x0eu },
-    /* position 3 */ { 0 },
+    /* position 1 */ { [9] = 0x03u, [10] = 0x03u, [12] = 0x03u, [13] = 0x03u, [' '] = 0x03u },
 };
 
 /* regex:    "\s+"
@@ -17,12 +15,12 @@ static const uint8_t regex_trans[4][256] = {
  * engine:   bitnfa (uint8_t)
  */
 bool regex_match(const char *input, size_t len) {
-    uint8_t state = 0x05u;
+    uint8_t state = 0x02u;
     for (size_t i = 0; i < len; i++) {
         unsigned char b = (unsigned char)input[i];
         uint8_t next = 0;
-        if (state & 0x04u) next |= regex_trans[2][b];
+        if (state & 0x02u) next |= regex_trans[1][b];
         state = next;
     }
-    return (state & 0x02u) != 0;
+    return (state & 0x01u) != 0;
 }

@@ -4,11 +4,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint8_t regex_trans[4][256] = {
+static const uint8_t regex_trans[2][256] = {
     /* position 0 */ { 0 },
-    /* position 1 */ { 0 },
-    /* position 2 */ { ['0'] = 0x0eu, ['1'] = 0x0eu, ['2'] = 0x0eu, ['3'] = 0x0eu, ['4'] = 0x0eu, ['5'] = 0x0eu, ['6'] = 0x0eu, ['7'] = 0x0eu, ['8'] = 0x0eu, ['9'] = 0x0eu, ['A'] = 0x0eu, ['B'] = 0x0eu, ['C'] = 0x0eu, ['D'] = 0x0eu, ['E'] = 0x0eu, ['F'] = 0x0eu, ['G'] = 0x0eu, ['H'] = 0x0eu, ['I'] = 0x0eu, ['J'] = 0x0eu, ['K'] = 0x0eu, ['L'] = 0x0eu, ['M'] = 0x0eu, ['N'] = 0x0eu, ['O'] = 0x0eu, ['P'] = 0x0eu, ['Q'] = 0x0eu, ['R'] = 0x0eu, ['S'] = 0x0eu, ['T'] = 0x0eu, ['U'] = 0x0eu, ['V'] = 0x0eu, ['W'] = 0x0eu, ['X'] = 0x0eu, ['Y'] = 0x0eu, ['Z'] = 0x0eu, ['_'] = 0x0eu, ['a'] = 0x0eu, ['b'] = 0x0eu, ['c'] = 0x0eu, ['d'] = 0x0eu, ['e'] = 0x0eu, ['f'] = 0x0eu, ['g'] = 0x0eu, ['h'] = 0x0eu, ['i'] = 0x0eu, ['j'] = 0x0eu, ['k'] = 0x0eu, ['l'] = 0x0eu, ['m'] = 0x0eu, ['n'] = 0x0eu, ['o'] = 0x0eu, ['p'] = 0x0eu, ['q'] = 0x0eu, ['r'] = 0x0eu, ['s'] = 0x0eu, ['t'] = 0x0eu, ['u'] = 0x0eu, ['v'] = 0x0eu, ['w'] = 0x0eu, ['x'] = 0x0eu, ['y'] = 0x0eu, ['z'] = 0x0eu },
-    /* position 3 */ { 0 },
+    /* position 1 */ { ['0'] = 0x03u, ['1'] = 0x03u, ['2'] = 0x03u, ['3'] = 0x03u, ['4'] = 0x03u, ['5'] = 0x03u, ['6'] = 0x03u, ['7'] = 0x03u, ['8'] = 0x03u, ['9'] = 0x03u, ['A'] = 0x03u, ['B'] = 0x03u, ['C'] = 0x03u, ['D'] = 0x03u, ['E'] = 0x03u, ['F'] = 0x03u, ['G'] = 0x03u, ['H'] = 0x03u, ['I'] = 0x03u, ['J'] = 0x03u, ['K'] = 0x03u, ['L'] = 0x03u, ['M'] = 0x03u, ['N'] = 0x03u, ['O'] = 0x03u, ['P'] = 0x03u, ['Q'] = 0x03u, ['R'] = 0x03u, ['S'] = 0x03u, ['T'] = 0x03u, ['U'] = 0x03u, ['V'] = 0x03u, ['W'] = 0x03u, ['X'] = 0x03u, ['Y'] = 0x03u, ['Z'] = 0x03u, ['_'] = 0x03u, ['a'] = 0x03u, ['b'] = 0x03u, ['c'] = 0x03u, ['d'] = 0x03u, ['e'] = 0x03u, ['f'] = 0x03u, ['g'] = 0x03u, ['h'] = 0x03u, ['i'] = 0x03u, ['j'] = 0x03u, ['k'] = 0x03u, ['l'] = 0x03u, ['m'] = 0x03u, ['n'] = 0x03u, ['o'] = 0x03u, ['p'] = 0x03u, ['q'] = 0x03u, ['r'] = 0x03u, ['s'] = 0x03u, ['t'] = 0x03u, ['u'] = 0x03u, ['v'] = 0x03u, ['w'] = 0x03u, ['x'] = 0x03u, ['y'] = 0x03u, ['z'] = 0x03u },
 };
 
 /* regex:    "\w+"
@@ -17,12 +15,12 @@ static const uint8_t regex_trans[4][256] = {
  * engine:   bitnfa (uint8_t)
  */
 bool regex_match(const char *input, size_t len) {
-    uint8_t state = 0x05u;
+    uint8_t state = 0x02u;
     for (size_t i = 0; i < len; i++) {
         unsigned char b = (unsigned char)input[i];
         uint8_t next = 0;
-        if (state & 0x04u) next |= regex_trans[2][b];
+        if (state & 0x02u) next |= regex_trans[1][b];
         state = next;
     }
-    return (state & 0x02u) != 0;
+    return (state & 0x01u) != 0;
 }
