@@ -4,15 +4,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint8_t regex_trans[8][256] = {
-    /* position 0 */ { ['a'] = 0x16u },
-    /* position 1 */ { 0 },
-    /* position 2 */ { 0 },
+static const uint8_t regex_trans[4][256] = {
+    /* position 0 */ { ['a'] = 0x02u },
+    /* position 1 */ { ['b'] = 0x06u },
+    /* position 2 */ { ['c'] = 0x08u },
     /* position 3 */ { 0 },
-    /* position 4 */ { ['b'] = 0x78u },
-    /* position 5 */ { 0 },
-    /* position 6 */ { ['c'] = 0x80u },
-    /* position 7 */ { 0 },
 };
 
 /* regex:    "ab+c"
@@ -26,9 +22,9 @@ bool regex_match(const char *input, size_t len) {
         unsigned char b = (unsigned char)input[i];
         uint8_t next = 0;
         if (state & 0x01u) next |= regex_trans[0][b];
-        if (state & 0x10u) next |= regex_trans[4][b];
-        if (state & 0x40u) next |= regex_trans[6][b];
+        if (state & 0x02u) next |= regex_trans[1][b];
+        if (state & 0x04u) next |= regex_trans[2][b];
         state = next;
     }
-    return (state & 0x80u) != 0;
+    return (state & 0x08u) != 0;
 }

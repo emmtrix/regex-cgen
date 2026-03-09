@@ -4,74 +4,55 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint32_t regex_trans[34][256][2] = {
-    /* position 0 */ { ['a'] = { 0x00000006u, 0x00000000u } },
-    /* position 1 */ { 0 },
-    /* position 2 */ { ['b'] = { 0x00000018u, 0x00000000u } },
-    /* position 3 */ { 0 },
-    /* position 4 */ { ['c'] = { 0x00000060u, 0x00000000u } },
-    /* position 5 */ { 0 },
-    /* position 6 */ { ['d'] = { 0x00000180u, 0x00000000u } },
-    /* position 7 */ { 0 },
-    /* position 8 */ { ['e'] = { 0x00000600u, 0x00000000u } },
-    /* position 9 */ { 0 },
-    /* position 10 */ { ['f'] = { 0x00001800u, 0x00000000u } },
-    /* position 11 */ { 0 },
-    /* position 12 */ { ['g'] = { 0x00006000u, 0x00000000u } },
-    /* position 13 */ { 0 },
-    /* position 14 */ { ['h'] = { 0x00018000u, 0x00000000u } },
-    /* position 15 */ { 0 },
-    /* position 16 */ { ['i'] = { 0x00060000u, 0x00000000u } },
+static const uint32_t regex_trans[18][256] = {
+    /* position 0 */ { ['a'] = 0x00000002u },
+    /* position 1 */ { ['b'] = 0x00000004u },
+    /* position 2 */ { ['c'] = 0x00000008u },
+    /* position 3 */ { ['d'] = 0x00000010u },
+    /* position 4 */ { ['e'] = 0x00000020u },
+    /* position 5 */ { ['f'] = 0x00000040u },
+    /* position 6 */ { ['g'] = 0x00000080u },
+    /* position 7 */ { ['h'] = 0x00000100u },
+    /* position 8 */ { ['i'] = 0x00000200u },
+    /* position 9 */ { ['j'] = 0x00000400u },
+    /* position 10 */ { ['k'] = 0x00000800u },
+    /* position 11 */ { ['l'] = 0x00001000u },
+    /* position 12 */ { ['m'] = 0x00002000u },
+    /* position 13 */ { ['n'] = 0x00004000u },
+    /* position 14 */ { ['o'] = 0x00008000u },
+    /* position 15 */ { ['p'] = 0x00010000u },
+    /* position 16 */ { ['q'] = 0x00020000u },
     /* position 17 */ { 0 },
-    /* position 18 */ { ['j'] = { 0x00180000u, 0x00000000u } },
-    /* position 19 */ { 0 },
-    /* position 20 */ { ['k'] = { 0x00600000u, 0x00000000u } },
-    /* position 21 */ { 0 },
-    /* position 22 */ { ['l'] = { 0x01800000u, 0x00000000u } },
-    /* position 23 */ { 0 },
-    /* position 24 */ { ['m'] = { 0x06000000u, 0x00000000u } },
-    /* position 25 */ { 0 },
-    /* position 26 */ { ['n'] = { 0x18000000u, 0x00000000u } },
-    /* position 27 */ { 0 },
-    /* position 28 */ { ['o'] = { 0x60000000u, 0x00000000u } },
-    /* position 29 */ { 0 },
-    /* position 30 */ { ['p'] = { 0x80000000u, 0x00000001u } },
-    /* position 31 */ { 0 },
-    /* position 32 */ { ['q'] = { 0x00000000u, 0x00000002u } },
-    /* position 33 */ { 0 },
 };
 
 /* regex:    "abcdefghijklmnopq"
  * flags:    ""
  * encoding: utf8
- * engine:   bitnfa (uint32_t[2])
+ * engine:   bitnfa (uint32_t)
  */
 bool regex_match(const char *input, size_t len) {
-    uint32_t s0 = 0x00000001u;
-    uint32_t s1 = 0x00000000u;
+    uint32_t state = 0x00000001u;
     for (size_t i = 0; i < len; i++) {
         unsigned char b = (unsigned char)input[i];
-        uint32_t n0 = 0;
-        uint32_t n1 = 0;
-        if (s0 & 0x00000001u) { n0 |= regex_trans[0][b][0]; n1 |= regex_trans[0][b][1]; }
-        if (s0 & 0x00000004u) { n0 |= regex_trans[2][b][0]; n1 |= regex_trans[2][b][1]; }
-        if (s0 & 0x00000010u) { n0 |= regex_trans[4][b][0]; n1 |= regex_trans[4][b][1]; }
-        if (s0 & 0x00000040u) { n0 |= regex_trans[6][b][0]; n1 |= regex_trans[6][b][1]; }
-        if (s0 & 0x00000100u) { n0 |= regex_trans[8][b][0]; n1 |= regex_trans[8][b][1]; }
-        if (s0 & 0x00000400u) { n0 |= regex_trans[10][b][0]; n1 |= regex_trans[10][b][1]; }
-        if (s0 & 0x00001000u) { n0 |= regex_trans[12][b][0]; n1 |= regex_trans[12][b][1]; }
-        if (s0 & 0x00004000u) { n0 |= regex_trans[14][b][0]; n1 |= regex_trans[14][b][1]; }
-        if (s0 & 0x00010000u) { n0 |= regex_trans[16][b][0]; n1 |= regex_trans[16][b][1]; }
-        if (s0 & 0x00040000u) { n0 |= regex_trans[18][b][0]; n1 |= regex_trans[18][b][1]; }
-        if (s0 & 0x00100000u) { n0 |= regex_trans[20][b][0]; n1 |= regex_trans[20][b][1]; }
-        if (s0 & 0x00400000u) { n0 |= regex_trans[22][b][0]; n1 |= regex_trans[22][b][1]; }
-        if (s0 & 0x01000000u) { n0 |= regex_trans[24][b][0]; n1 |= regex_trans[24][b][1]; }
-        if (s0 & 0x04000000u) { n0 |= regex_trans[26][b][0]; n1 |= regex_trans[26][b][1]; }
-        if (s0 & 0x10000000u) { n0 |= regex_trans[28][b][0]; n1 |= regex_trans[28][b][1]; }
-        if (s0 & 0x40000000u) { n0 |= regex_trans[30][b][0]; n1 |= regex_trans[30][b][1]; }
-        if (s1 & 0x00000001u) { n0 |= regex_trans[32][b][0]; n1 |= regex_trans[32][b][1]; }
-        s0 = n0;
-        s1 = n1;
+        uint32_t next = 0;
+        if (state & 0x00000001u) next |= regex_trans[0][b];
+        if (state & 0x00000002u) next |= regex_trans[1][b];
+        if (state & 0x00000004u) next |= regex_trans[2][b];
+        if (state & 0x00000008u) next |= regex_trans[3][b];
+        if (state & 0x00000010u) next |= regex_trans[4][b];
+        if (state & 0x00000020u) next |= regex_trans[5][b];
+        if (state & 0x00000040u) next |= regex_trans[6][b];
+        if (state & 0x00000080u) next |= regex_trans[7][b];
+        if (state & 0x00000100u) next |= regex_trans[8][b];
+        if (state & 0x00000200u) next |= regex_trans[9][b];
+        if (state & 0x00000400u) next |= regex_trans[10][b];
+        if (state & 0x00000800u) next |= regex_trans[11][b];
+        if (state & 0x00001000u) next |= regex_trans[12][b];
+        if (state & 0x00002000u) next |= regex_trans[13][b];
+        if (state & 0x00004000u) next |= regex_trans[14][b];
+        if (state & 0x00008000u) next |= regex_trans[15][b];
+        if (state & 0x00010000u) next |= regex_trans[16][b];
+        state = next;
     }
-    return ((s1 & 0x00000002u)) != 0;
+    return (state & 0x00020000u) != 0;
 }

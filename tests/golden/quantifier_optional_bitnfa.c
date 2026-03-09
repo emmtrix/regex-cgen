@@ -4,40 +4,33 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint16_t regex_trans[14][256] = {
-    /* position 0 */ { ['c'] = 0x0006u },
-    /* position 1 */ { 0 },
-    /* position 2 */ { ['o'] = 0x0018u },
-    /* position 3 */ { 0 },
-    /* position 4 */ { ['l'] = 0x0060u },
-    /* position 5 */ { 0 },
-    /* position 6 */ { ['o'] = 0x1780u },
-    /* position 7 */ { 0 },
-    /* position 8 */ { 0 },
-    /* position 9 */ { 0 },
-    /* position 10 */ { ['u'] = 0x1a00u },
-    /* position 11 */ { 0 },
-    /* position 12 */ { ['r'] = 0x2000u },
-    /* position 13 */ { 0 },
+static const uint8_t regex_trans[7][256] = {
+    /* position 0 */ { ['c'] = 0x02u },
+    /* position 1 */ { ['o'] = 0x04u },
+    /* position 2 */ { ['l'] = 0x08u },
+    /* position 3 */ { ['o'] = 0x30u },
+    /* position 4 */ { ['u'] = 0x20u },
+    /* position 5 */ { ['r'] = 0x40u },
+    /* position 6 */ { 0 },
 };
 
 /* regex:    "colou?r"
  * flags:    ""
  * encoding: utf8
- * engine:   bitnfa (uint16_t)
+ * engine:   bitnfa (uint8_t)
  */
 bool regex_match(const char *input, size_t len) {
-    uint16_t state = 0x0001u;
+    uint8_t state = 0x01u;
     for (size_t i = 0; i < len; i++) {
         unsigned char b = (unsigned char)input[i];
-        uint16_t next = 0;
-        if (state & 0x0001u) next |= regex_trans[0][b];
-        if (state & 0x0004u) next |= regex_trans[2][b];
-        if (state & 0x0010u) next |= regex_trans[4][b];
-        if (state & 0x0040u) next |= regex_trans[6][b];
-        if (state & 0x0400u) next |= regex_trans[10][b];
-        if (state & 0x1000u) next |= regex_trans[12][b];
+        uint8_t next = 0;
+        if (state & 0x01u) next |= regex_trans[0][b];
+        if (state & 0x02u) next |= regex_trans[1][b];
+        if (state & 0x04u) next |= regex_trans[2][b];
+        if (state & 0x08u) next |= regex_trans[3][b];
+        if (state & 0x10u) next |= regex_trans[4][b];
+        if (state & 0x20u) next |= regex_trans[5][b];
         state = next;
     }
-    return (state & 0x2000u) != 0;
+    return (state & 0x40u) != 0;
 }
