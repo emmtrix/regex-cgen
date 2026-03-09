@@ -8,14 +8,14 @@ correctness via compile-and-execute.
 from __future__ import annotations
 
 import re
-import subprocess
 from pathlib import Path
 
 import pytest
 
-from regex_cgen import generate
-from regex_cgen.codegen_bitnfa import generate_bitnfa_c_code
-from regex_cgen.compiler import compile_nfa
+from emx_regex_cgen import generate
+from emx_regex_cgen.codegen_bitnfa import generate_bitnfa_c_code
+from emx_regex_cgen.compiler import compile_nfa
+from tests._support import build_matcher, run_matcher
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -24,23 +24,12 @@ from regex_cgen.compiler import compile_nfa
 
 def _build(pattern: str, tmp_path: Path, flags: str = "", **kwargs) -> Path:
     """Generate, write and compile a bitnfa C matcher; return the executable."""
-    c_code = generate(pattern, flags=flags, emit_main=True, engine="bitnfa", **kwargs)
-    c_file = tmp_path / "test.c"
-    c_file.write_text(c_code)
-    exe = tmp_path / "test"
-    comp = subprocess.run(
-        ["gcc", "-O2", "-o", str(exe), str(c_file)],
-        capture_output=True,
-        timeout=30,
-    )
-    assert comp.returncode == 0, f"gcc failed:\n{comp.stderr.decode()}"
-    return exe
+    return build_matcher(pattern, tmp_path, flags=flags, engine="bitnfa", **kwargs)
 
 
 def _run(exe: Path, inp: str) -> bool:
-    """Run *exe* with *inp* as a command-line argument; return True on match."""
-    result = subprocess.run([str(exe), inp], capture_output=True, timeout=10)
-    return result.returncode == 0
+    """Run *exe* with *inp* and return True on match."""
+    return run_matcher(exe, inp, exe.parent)
 
 
 # ---------------------------------------------------------------------------
@@ -133,7 +122,7 @@ def test_prefix() -> None:
 
 def test_position_reduction_fewer_positions() -> None:
     """Position NFA must have fewer positions than the raw Thompson NFA."""
-    from regex_cgen.compiler import _build_nfa
+    from emx_regex_cgen.compiler import _build_nfa
 
     for pat in ["hello", "abc", "(a|b)*c", "a{2,4}", "cat|dog"]:
         builder, _start, _accept = _build_nfa(pat)
@@ -314,15 +303,6 @@ def test_bitnfa_matches_dfa(
     dfa_dir.mkdir()
     exe_bitnfa = _build(pattern, bitnfa_dir)
     # Build DFA version
-    c_code = generate(pattern, emit_main=True, engine="dfa")
-    c_file = dfa_dir / "test.c"
-    c_file.write_text(c_code)
-    exe_dfa = dfa_dir / "test"
-    comp = subprocess.run(
-        ["gcc", "-O2", "-o", str(exe_dfa), str(c_file)],
-        capture_output=True,
-        timeout=30,
-    )
-    assert comp.returncode == 0
+    exe_dfa = build_matcher(pattern, dfa_dir, engine="dfa")
     assert _run(exe_bitnfa, inp) == expected
     assert _run(exe_dfa, inp) == expected

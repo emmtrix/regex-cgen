@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from regex_cgen import generate
+from emx_regex_cgen import generate
 
 GOLDEN_DIR = Path(__file__).parent / "golden"
 
@@ -83,7 +83,7 @@ def test_golden(filename: str, pattern: str, kwargs: dict) -> None:
     """Generated output must match the committed golden file."""
     golden_path = GOLDEN_DIR / filename
     actual = generate(pattern, **kwargs)
-    expected = golden_path.read_text()
+    expected = golden_path.read_text(encoding="utf-8")
     assert actual == expected, (
         f"Golden file '{filename}' does not match the current output of generate().\n"
         "If the change is intentional, regenerate golden files with:\n"

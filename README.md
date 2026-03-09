@@ -3,7 +3,7 @@
 **Regex to C Code Generator** — compile regular expressions into portable,
 static C code for embedded and performance-critical applications.
 
-[![CI](https://github.com/emmtrix/regex-cgen/actions/workflows/ci.yml/badge.svg)](https://github.com/emmtrix/regex-cgen/actions/workflows/ci.yml)
+[![CI](https://github.com/emmtrix/emx-regex-cgen/actions/workflows/ci.yml/badge.svg)](https://github.com/emmtrix/emx-regex-cgen/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Key Characteristics
@@ -34,12 +34,15 @@ static C code for embedded and performance-critical applications.
 pip install -e ".[dev]"
 ```
 
+The distribution name is `emx-regex-cgen`. The Python import path is
+`emx_regex_cgen`.
+
 ## Quick Start
 
 ### Python Library
 
 ```python
-from regex_cgen import generate
+from emx_regex_cgen import generate
 
 # Generate a match function (UTF-8 mode, default DFA engine)
 c_code = generate(r"\d{4}-\d{2}-\d{2}")
@@ -59,10 +62,10 @@ c_code = generate(r"hello", engine="bitnfa")
 
 ```bash
 # Write generated C code to stdout
-regex-cgen '[a-z]+\d+'
+emx-regex-cgen '[a-z]+\d+'
 
 # Write to a file with a main() function
-regex-cgen '[a-z]+\d+' --emit-main -o matcher.c
+emx-regex-cgen '[a-z]+\d+' --emit-main -o matcher.c
 
 # Compile and test
 gcc -O2 -o matcher matcher.c
@@ -70,16 +73,16 @@ gcc -O2 -o matcher matcher.c
 ./matcher "HELLO"     # exit 1 (no match)
 
 # Bytes mode: match any sequence of high bytes
-regex-cgen --encoding bytes '[\x80-\xff]+' --emit-main -o byte_matcher.c
+emx-regex-cgen --encoding bytes '[\x80-\xff]+' --emit-main -o byte_matcher.c
 
 # Use the bit-parallel NFA backend
-regex-cgen --engine bitnfa 'hello' --emit-main -o bitnfa_matcher.c
+emx-regex-cgen --engine bitnfa 'hello' --emit-main -o bitnfa_matcher.c
 ```
 
 ## CLI Reference
 
 ```
-usage: regex-cgen [-h] [-o OUTPUT] [--emit-main] [--prefix PREFIX]
+usage: emx-regex-cgen [-h] [-o OUTPUT] [--emit-main] [--prefix PREFIX]
                   [--flags FLAGS] [--encoding {utf8,bytes}]
                   [--engine {dfa,bitnfa}]
                   [--row-dedup {yes,no,auto}]
@@ -274,8 +277,8 @@ ruff check src/ tests/
 
 ```bash
 # Clone
-git clone --recurse-submodules https://github.com/emmtrix/regex-cgen.git
-cd regex-cgen
+git clone --recurse-submodules https://github.com/emmtrix/emx-regex-cgen.git
+cd emx-regex-cgen
 
 # Install
 pip install -e ".[dev]"
