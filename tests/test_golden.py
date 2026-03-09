@@ -17,7 +17,7 @@ GOLDEN_DIR = Path(__file__).parent / "golden"
 
 # (golden_filename, pattern, generate() keyword arguments)
 CASES: list[tuple[str, str, dict]] = [
-    # --- regex features ---
+    # --- regex features (DFA) ---
     ("literal.c",              r"hello",                 {}),
     ("char_class.c",           r"[a-z0-9_]+",            {}),
     ("negated_class.c",        r"[^aeiou]+",              {}),
@@ -32,7 +32,7 @@ CASES: list[tuple[str, str, dict]] = [
     ("escape_space.c",         r"\s+",                    {}),
     ("unicode.c",              r"\x{00e9}+",              {}),
     ("anchors.c",              r"^start.*end$",           {}),
-    # --- CLI options / flags ---
+    # --- CLI options / flags (DFA) ---
     ("flag_ignorecase.c",      r"[a-z]+",                 {"flags": "i"}),
     ("flag_dotall.c",          r".+",                     {"flags": "s"}),
     ("flag_multiline.c",       r"[a-z]+",                 {"flags": "m"}),
@@ -43,6 +43,38 @@ CASES: list[tuple[str, str, dict]] = [
     ("alphabet_compression.c", r"hello",                  {"alphabet_compression": "yes"}),
     ("row_dedup.c",            r"hello",                  {"row_dedup": "yes"}),
     ("early_exit.c",           r"hello",                  {"early_exit": True}),
+    # --- regex features (bitnfa) ---
+    ("literal_bitnfa.c",              r"hello",                 {"engine": "bitnfa"}),
+    ("char_class_bitnfa.c",           r"[a-z0-9_]+",            {"engine": "bitnfa"}),
+    ("negated_class_bitnfa.c",        r"[^aeiou]+",              {"engine": "bitnfa"}),
+    ("dot_bitnfa.c",                  r".+",                     {"engine": "bitnfa"}),
+    ("alternation_bitnfa.c",          r"cat|dog|fish",           {"engine": "bitnfa"}),
+    ("quantifier_star_bitnfa.c",      r"ab*c",                   {"engine": "bitnfa"}),
+    ("quantifier_plus_bitnfa.c",      r"ab+c",                   {"engine": "bitnfa"}),
+    ("quantifier_optional_bitnfa.c",  r"colou?r",                {"engine": "bitnfa"}),
+    ("quantifier_repeat_bitnfa.c",    r"a{2,4}",                 {"engine": "bitnfa"}),
+    ("escape_digit_bitnfa.c",         r"\d{4}-\d{2}-\d{2}",     {"engine": "bitnfa"}),
+    ("escape_word_bitnfa.c",          r"\w+",                    {"engine": "bitnfa"}),
+    ("escape_space_bitnfa.c",         r"\s+",                    {"engine": "bitnfa"}),
+    ("unicode_bitnfa.c",              r"\x{00e9}+",              {"engine": "bitnfa"}),
+    ("anchors_bitnfa.c",              r"^start.*end$",           {"engine": "bitnfa"}),
+    # --- CLI options / flags (bitnfa) ---
+    ("flag_ignorecase_bitnfa.c",  r"[a-z]+",     {"engine": "bitnfa", "flags": "i"}),
+    ("flag_dotall_bitnfa.c",      r".+",          {"engine": "bitnfa", "flags": "s"}),
+    ("flag_multiline_bitnfa.c",   r"[a-z]+",      {"engine": "bitnfa", "flags": "m"}),
+    ("flag_verbose_bitnfa.c",     r"(?x) [a-z]+ # letters",
+     {"engine": "bitnfa", "flags": "x"}),
+    ("encoding_bytes_bitnfa.c",   r"[\x80-\xff]+",
+     {"engine": "bitnfa", "encoding": "bytes"}),
+    ("prefix_bitnfa.c",           r"[a-z]+",
+     {"engine": "bitnfa", "prefix": "my_matcher"}),
+    ("emit_main_bitnfa.c",        r"\d+",
+     {"engine": "bitnfa", "emit_main": True}),
+    # --- bitnfa variant-specific ---
+    ("bitnfa_uint8.c",        r"ab",              {"engine": "bitnfa"}),
+    ("bitnfa_uint16.c",       r"hello",           {"engine": "bitnfa"}),
+    ("bitnfa_uint32.c",       r"cat|dog|fish",    {"engine": "bitnfa"}),
+    ("bitnfa_uint32_array.c", r"abcdefghijklmnopq", {"engine": "bitnfa"}),
 ]
 
 
