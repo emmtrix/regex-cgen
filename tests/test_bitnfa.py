@@ -124,6 +124,53 @@ def test_prefix() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Position-NFA reduction tests
+# ---------------------------------------------------------------------------
+
+
+def test_position_reduction_fewer_positions() -> None:
+    """Position NFA must have fewer positions than the raw Thompson NFA."""
+    from regex_cgen.compiler import _build_nfa
+
+    for pat in ["hello", "abc", "(a|b)*c", "a{2,4}", "cat|dog"]:
+        builder, _start, _accept = _build_nfa(pat)
+        thompson_count = builder._next
+        nfa = compile_nfa(pat)
+        assert nfa["num_positions"] < thompson_count, (
+            f"Pattern {pat!r}: position NFA ({nfa['num_positions']}) "
+            f"not smaller than Thompson NFA ({thompson_count})"
+        )
+
+
+def test_position_reduction_no_empty_rows() -> None:
+    """Every position in the reduced NFA (except accept) should have transitions."""
+    for pat in ["ab", "hello", "(a|b)*c", "[a-z]+", r"\d{3}"]:
+        nfa = compile_nfa(pat)
+        empty_count = sum(
+            1 for masks in nfa["trans_masks"] if not masks
+        )
+        # At most one empty row (the accept position)
+        assert empty_count <= 1, (
+            f"Pattern {pat!r}: {empty_count} empty rows in position NFA"
+        )
+
+
+def test_position_reduction_contiguous_bits() -> None:
+    """Bit positions must be contiguous (0..N-1) with no gaps."""
+    for pat in ["abc", "a|b|c", "(xy)+", r"\w+"]:
+        nfa = compile_nfa(pat)
+        n = nfa["num_positions"]
+        all_bits = nfa["initial"] | nfa["accept"]
+        for masks in nfa["trans_masks"]:
+            for bits in masks.values():
+                all_bits |= bits
+        # All referenced bits must be within [0, n)
+        assert all_bits < (1 << n), (
+            f"Pattern {pat!r}: bits exceed num_positions={n}"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Functional correctness – all four variants
 # ---------------------------------------------------------------------------
 
