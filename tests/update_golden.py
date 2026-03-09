@@ -68,10 +68,10 @@ CASES: list[tuple[str, str, dict]] = [
     ("emit_main_bitnfa.c",        r"\d+",
      {"engine": "bitnfa", "emit_main": True}),
     # --- bitnfa variant-specific ---
-    ("bitnfa_uint8.c",        r"ab",              {"engine": "bitnfa"}),
-    ("bitnfa_uint16.c",       r"hello",           {"engine": "bitnfa"}),
-    ("bitnfa_uint32.c",       r"cat|dog|fish",    {"engine": "bitnfa"}),
-    ("bitnfa_uint32_array.c", r"abcdefghijklmnopq", {"engine": "bitnfa"}),
+    ("bitnfa_uint8.c",        r"ab",                              {"engine": "bitnfa"}),
+    ("bitnfa_uint16.c",       r"cat|dog|fish",                    {"engine": "bitnfa"}),
+    ("bitnfa_uint32.c",       r"abcdefghijklmnopq",               {"engine": "bitnfa"}),
+    ("bitnfa_uint32_array.c", r"abcdefghijklmnopqrstuvwxyz012345", {"engine": "bitnfa"}),
 ]
 
 for filename, pattern, kwargs in CASES:

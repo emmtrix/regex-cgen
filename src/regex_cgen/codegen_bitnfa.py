@@ -12,6 +12,16 @@ def _mask_lit(value: int, bits: int) -> str:
     return f"0x{value & 0xffffffff:08x}u"
 
 
+def _min_type(max_val: int) -> tuple[str, int]:
+    """Return ``(C type name, bit width)`` for the narrowest unsigned type
+    that can hold *max_val*."""
+    if max_val <= 0xFF:
+        return "uint8_t", 8
+    if max_val <= 0xFFFF:
+        return "uint16_t", 16
+    return "uint32_t", 32
+
+
 def _byte_designator(b: int) -> str:
     """Return a C array designator for byte *b*."""
     if 32 <= b <= 126:
@@ -58,22 +68,21 @@ def _emit_single_word(
         lines.append("#include <stdio.h>")
     lines.append("")
 
-    # Transition table
-    lines.append(
-        f"static const {state_t} {prefix}_trans[{num_pos}][256] = {{"
-    )
-    for p in range(num_pos):
+    # Individual transition table per active position, each with its minimum type
+    for p in active_positions:
         masks = trans_masks[p]
+        max_val = max(masks.values(), default=0)
+        pos_type, pos_bits = _min_type(max_val)
         non_zero = sorted((b, v) for b, v in masks.items() if v != 0)
         if not non_zero:
             row_str = "{ 0 }"
         else:
-            entries = []
-            for b, v in non_zero:
-                entries.append(f"{_byte_designator(b)} = {_mask_lit(v, bits)}")
+            entries = [
+                f"{_byte_designator(b)} = {_mask_lit(v, pos_bits)}"
+                for b, v in non_zero
+            ]
             row_str = "{ " + ", ".join(entries) + " }"
-        lines.append(f"    /* position {p} */ {row_str},")
-    lines.append("};")
+        lines.append(f"static const {pos_type} {prefix}_trans_{p}[256] = {row_str};")
     lines.append("")
 
     # Metadata comment
@@ -96,7 +105,7 @@ def _emit_single_word(
     for p in active_positions:
         lines.append(
             f"        if (state & {_mask_lit(1 << p, bits)}) "
-            f"next |= {prefix}_trans[{p}][b];"
+            f"next |= {prefix}_trans_{p}[b];"
         )
     lines.append("        state = next;")
     lines.append("    }")
@@ -148,15 +157,14 @@ def _emit_array_variant(
         lines.append("#include <stdio.h>")
     lines.append("")
 
-    # Transition table: [num_pos][256][num_words]
-    lines.append(
-        f"static const uint32_t {prefix}_trans[{num_pos}][256][{num_words}] = {{"
-    )
-    for p in range(num_pos):
+    # Individual transition table per active position
+    for p in active_positions:
         masks = trans_masks[p]
         non_zero = sorted((b, v) for b, v in masks.items() if v != 0)
         if not non_zero:
-            lines.append(f"    /* position {p} */ {{ 0 }},")
+            lines.append(
+                f"static const uint32_t {prefix}_trans_{p}[256][{num_words}] = {{ 0 }};"
+            )
         else:
             entries = []
             for b, v in non_zero:
@@ -164,8 +172,9 @@ def _emit_array_variant(
                 word_str = ", ".join(f"0x{w:08x}u" for w in words)
                 entries.append(f"{_byte_designator(b)} = {{ {word_str} }}")
             row_str = "{ " + ", ".join(entries) + " }"
-            lines.append(f"    /* position {p} */ {row_str},")
-    lines.append("};")
+            lines.append(
+                f"static const uint32_t {prefix}_trans_{p}[256][{num_words}] = {row_str};"
+            )
     lines.append("")
 
     # Metadata comment
@@ -193,7 +202,7 @@ def _emit_array_variant(
         bit_idx = p % 32
         bit_mask = f"0x{1 << bit_idx:08x}u"
         assigns = " ".join(
-            f"n{w} |= {prefix}_trans[{p}][b][{w}];" for w in range(num_words)
+            f"n{w} |= {prefix}_trans_{p}[b][{w}];" for w in range(num_words)
         )
         lines.append(f"        if (s{word_idx} & {bit_mask}) {{ {assigns} }}")
     for w in range(num_words):
