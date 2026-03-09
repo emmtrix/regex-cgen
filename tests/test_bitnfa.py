@@ -54,7 +54,8 @@ def test_variant_uint8() -> None:
     assert nfa["num_positions"] <= 8
     code = generate_bitnfa_c_code(nfa)
     assert "uint8_t" in code
-    assert re.search(r"regex_trans\[\d+\]\[256\]", code)
+    # Individual per-position arrays: regex_trans_<p>[256]
+    assert re.search(r"regex_trans_\d+\[256\]", code)
 
 
 def test_variant_uint16() -> None:
@@ -63,7 +64,8 @@ def test_variant_uint16() -> None:
     assert 8 < nfa["num_positions"] <= 16
     code = generate_bitnfa_c_code(nfa)
     assert "uint16_t" in code
-    assert re.search(r"regex_trans\[\d+\]\[256\]", code)
+    # Individual per-position arrays: regex_trans_<p>[256]
+    assert re.search(r"regex_trans_\d+\[256\]", code)
 
 
 def test_variant_uint32() -> None:
@@ -81,8 +83,9 @@ def test_variant_uint32_array() -> None:
     nfa = compile_nfa("a{33}")
     assert nfa["num_positions"] > 32
     code = generate_bitnfa_c_code(nfa)
-    m = re.search(r"regex_trans\[\d+\]\[256\]\[(\d+)\]", code)
-    assert m is not None, "Expected 3-dimensional transition table for uint32_array"
+    # Individual per-position arrays: regex_trans_<p>[256][num_words]
+    m = re.search(r"regex_trans_\d+\[256\]\[(\d+)\]", code)
+    assert m is not None, "Expected per-position 2-D transition arrays for uint32_array"
     num_words = int(m.group(1))
     assert num_words == (nfa["num_positions"] + 31) // 32
 
