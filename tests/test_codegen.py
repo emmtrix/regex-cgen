@@ -31,7 +31,7 @@ def test_fullmatch(
     flags = "".join(c for c in case.get("flags", "") if c in "imsx")
     subjects: list[dict] = case["subjects"]
 
-    # 1. Generate C code
+    # 1. Generate and compile C code
     try:
         exe = build_matcher(pattern, tmp_path, flags=flags, engine=engine)
     except (ValueError, Exception) as exc:

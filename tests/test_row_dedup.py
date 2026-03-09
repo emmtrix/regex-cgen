@@ -43,7 +43,7 @@ def test_dedup_emits_row_map_when_duplicates_exist() -> None:
     # all-zero transition row; deduplication should kick in.
     dfa = compile_regex("a[bc]+d")
     n = dfa["num_states"]
-    code = generate_c_code(dfa, row_dedup="yes")
+    code = generate_c_code(dfa, row_dedup="yes").render()
 
     # Declaration must be present, sized correctly
     assert re.search(rf"regex_row_map\[{n}\]", code), (
@@ -59,7 +59,7 @@ def test_dedup_reduces_table_rows() -> None:
     """The emitted regex_transitions must have fewer rows than num_states."""
     dfa = compile_regex("a[bc]+d")
     n = dfa["num_states"]
-    code = generate_c_code(dfa, row_dedup="yes")
+    code = generate_c_code(dfa, row_dedup="yes").render()
     # Extract the dimension from the table declaration, e.g. "regex_transitions[4][256]"
     m = re.search(r"regex_transitions\[(\d+)\]\[256\]", code)
     assert m is not None
@@ -81,7 +81,7 @@ def test_dedup_no_row_map_when_all_rows_unique() -> None:
             (1, ord("b")): 0,
         },
     }
-    code = generate_c_code(dfa, row_dedup="yes")
+    code = generate_c_code(dfa, row_dedup="yes").render()
     assert "regex_row_map" not in code
 
 

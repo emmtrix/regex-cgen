@@ -82,7 +82,7 @@ CASES: list[tuple[str, str, dict]] = [
 ]
 
 for filename, pattern, kwargs in CASES:
-    content = generate(pattern, **kwargs)
+    content = generate(pattern, **kwargs).render()
     path = GOLDEN_DIR / filename
     path.write_text(content, encoding="utf-8")
     print(f"  wrote {path}")

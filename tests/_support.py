@@ -88,7 +88,7 @@ def build_matcher(
         engine=engine,
         encoding=encoding,
         **kwargs,
-    )
+    ).render()
     generated_c = tmp_path / "generated.c"
     generated_c.write_text(c_code, encoding="utf-8")
 

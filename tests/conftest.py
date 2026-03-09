@@ -6,6 +6,13 @@ from pathlib import Path
 
 import pytest
 
+try:
+    import xdist  # noqa: F401
+except ImportError:
+    HAS_XDIST = False
+else:
+    HAS_XDIST = True
+
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 CODEGEN_JSON = ROOT / "tests" / "data" / "re2_compat_results.json"
@@ -27,8 +34,9 @@ def pytest_configure(config: pytest.Config) -> None:
         config._codegen_cases = _load_codegen_cases()
 
 
-def pytest_configure_node(node) -> None:
-    node.workerinput["codegen_cases"] = node.config._codegen_cases
+if HAS_XDIST:
+    def pytest_configure_node(node) -> None:
+        node.workerinput["codegen_cases"] = node.config._codegen_cases
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
