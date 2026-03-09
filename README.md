@@ -249,29 +249,6 @@ bool regex_match(const char *input, size_t len) {
 }
 ```
 
-## Compilation Pipeline
-
-```
-Regex pattern (string)
-        │
-        ▼
-   sre_parse AST
-        │
-        ▼
-   Thompson NFA
-        │
-        ├──────────────────────────────┐
-        │  --engine dfa (default)      │  --engine bitnfa
-        ▼                              ▼
-   Subset-construction DFA      Bit-parallel NFA
-        │                        (precomputed masks)
-        ▼                              │
-   Hopcroft-minimised DFA             │
-        │                              │
-        ▼                              ▼
-   Table-driven C code          Unrolled bitwise C code
-```
-
 ## Testing
 
 Tests are parameterised from `re2_compat_results.json`, which contains
