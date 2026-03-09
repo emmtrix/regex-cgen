@@ -6,9 +6,16 @@ Run this script whenever the code generator output intentionally changes::
     python tests/update_golden.py
 """
 
+import sys
 from pathlib import Path
 
-from regex_cgen import generate
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from emx_regex_cgen import generate  # noqa: E402
 
 GOLDEN_DIR = Path(__file__).parent / "golden"
 GOLDEN_DIR.mkdir(exist_ok=True)
@@ -77,7 +84,7 @@ CASES: list[tuple[str, str, dict]] = [
 for filename, pattern, kwargs in CASES:
     content = generate(pattern, **kwargs)
     path = GOLDEN_DIR / filename
-    path.write_text(content)
+    path.write_text(content, encoding="utf-8")
     print(f"  wrote {path}")
 
 print(f"\nUpdated {len(CASES)} golden files.")
