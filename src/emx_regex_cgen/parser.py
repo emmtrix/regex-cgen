@@ -51,11 +51,13 @@ class _Const:
 LITERAL = _Const("LITERAL")
 NOT_LITERAL = _Const("NOT_LITERAL")
 ANY = _Const("ANY")
+BYTE = _Const("BYTE")
 IN = _Const("IN")
 BRANCH = _Const("BRANCH")
 SUBPATTERN = _Const("SUBPATTERN")
 MAX_REPEAT = _Const("MAX_REPEAT")
 MIN_REPEAT = _Const("MIN_REPEAT")
+FLAGS = _Const("FLAGS")
 AT = _Const("AT")
 NEGATE = _Const("NEGATE")
 RANGE = _Const("RANGE")
@@ -118,32 +120,33 @@ class _Parser:
     # -- top-level -----------------------------------------------------------
 
     def parse(self) -> list:
-        self._skip_leading_flags()
-        result = self._regex()
+        prefix = self._skip_leading_flags()
+        result = prefix + self._regex()
         if not self._at_end:
             raise self._error("unbalanced parenthesis")
         return result
 
-    def _skip_leading_flags(self) -> None:
+    def _skip_leading_flags(self) -> list:
         """Consume zero or more leading ``(?flags)`` directives."""
+        items: list = []
         while self.pos + 2 <= len(self.source):
             if self.source[self.pos] != "(" or self.source[self.pos + 1] != "?":
                 break
             saved = self.pos
             self.pos += 2
-            if self._at_end or self._peek() not in "imsx":
+            if self._at_end or self._peek() not in "imsxU-":
                 self.pos = saved
                 break
-            while not self._at_end and self._peek() in "imsx":
-                ch = self._advance()
-                if ch == "x":
-                    self.flags |= _re.VERBOSE
+            add_flags, del_flags = self._parse_flag_spec()
             if self._peek() == ")":
                 self._advance()
+                self._apply_parse_flags(add_flags, del_flags)
+                items.append((FLAGS, (add_flags, del_flags)))
                 continue
             # Not a bare flag directive (could be ``(?i:...)``) — backtrack.
             self.pos = saved
             break
+        return items
 
     # -- verbose-mode helpers ------------------------------------------------
 
@@ -257,7 +260,11 @@ class _Parser:
                 self._advance()
                 return self._named_group_P(start_pos)
 
-            if ch is not None and ch in "imsx-":
+            if ch == "<":
+                self._advance()
+                return self._named_group_angle(start_pos)
+
+            if ch is not None and ch in "imsxU-":
                 return self._flag_group(start_pos)
 
             # Unknown extension — e.g. ``(?<...)``, ``(?U)``
@@ -280,6 +287,14 @@ class _Parser:
             c = self._peek() or ""
             raise self._error(f"unknown extension ?P{c}", start_pos + 1)
         self._advance()  # consume '<'
+        return self._named_group_common(start_pos)
+
+    def _named_group_angle(self, start_pos: int):
+        """Parse ``(?<name>...)``."""
+        return self._named_group_common(start_pos)
+
+    def _named_group_common(self, start_pos: int):
+        """Parse the common ``<name>...`` part of a named group."""
 
         name_start = self.pos
         while not self._at_end and self._peek() != ">":
@@ -298,31 +313,71 @@ class _Parser:
 
     def _flag_group(self, start_pos: int):
         """Parse ``(?flags)``, ``(?flags:...)`` and ``(?-flags:...)``."""
-        while not self._at_end and self._peek() in "imsx-":
-            self._advance()
+        add_flags, del_flags = self._parse_flag_spec()
 
         if self._peek() == ":":
             self._advance()
+            old_flags = self.flags
+            self._apply_parse_flags(add_flags, del_flags)
             items = self._regex()
+            self.flags = old_flags
             if self._peek() != ")":
                 raise self._error(
                     "missing ), unterminated subpattern", start_pos
                 )
             self._advance()
-            return items  # inline
+            return (SUBPATTERN, (None, add_flags, del_flags, items))
 
         if self._peek() == ")":
             self._advance()
-            if start_pos > 0:
-                raise self._error(
-                    "global flags not at the start of the expression",
-                    start_pos + 1,
-                )
-            # Leading directive — already consumed by _skip_leading_flags in
-            # the normal path.  Return empty list so it splices as a no-op.
-            return []
+            self._apply_parse_flags(add_flags, del_flags)
+            return (FLAGS, (add_flags, del_flags))
 
         raise self._error("missing :", self.pos)
+
+    def _parse_flag_spec(self) -> tuple[int, int]:
+        """Parse the flag payload after ``(?`` and return ``(add, del)``."""
+        add_flags = 0
+        del_flags = 0
+        removing = False
+        saw_any = False
+        while not self._at_end:
+            ch = self._peek()
+            if ch == "-":
+                removing = True
+                self._advance()
+                continue
+            if ch not in "imsxU":
+                break
+            self._advance()
+            saw_any = True
+            flag = self._flag_bit(ch)
+            if removing:
+                del_flags |= flag
+            else:
+                add_flags |= flag
+        if not saw_any:
+            raise self._error("missing flag", self.pos)
+        return add_flags, del_flags
+
+    @staticmethod
+    def _flag_bit(ch: str) -> int:
+        """Map one inline flag character to its parser/compiler bit."""
+        if ch == "i":
+            return _re.IGNORECASE
+        if ch == "m":
+            return _re.MULTILINE
+        if ch == "s":
+            return _re.DOTALL
+        if ch == "x":
+            return _re.VERBOSE
+        if ch == "U":
+            return 0
+        raise ValueError(f"unsupported flag: {ch}")
+
+    def _apply_parse_flags(self, add_flags: int, del_flags: int) -> None:
+        """Apply parser-visible flags so later tokens parse under the new mode."""
+        self.flags = (self.flags | add_flags) & ~del_flags
 
     # -- quantifiers ---------------------------------------------------------
 
@@ -499,10 +554,13 @@ class _Parser:
             return (LITERAL, self._octal_escape(ch, esc_pos))
 
         if ch in "pP":
-            name = self._unicode_property(ch, esc_pos)
-            return (UNICODE_PROPERTY, (name, ch == "P"))
+            name, negate = self._unicode_property(ch, esc_pos)
+            negate = negate ^ (ch == "P")
+            return (UNICODE_PROPERTY, (name, negate))
 
-        if ch in "CQEz":
+        if ch == "z":
+            return (AT, AT_END_STRING)
+        if ch in "CQE":
             raise self._error(f"bad escape \\{ch}", esc_pos)
         return (LITERAL, ord(ch))
 
@@ -537,8 +595,10 @@ class _Parser:
             return (AT, AT_NON_BOUNDARY)
         if ch == "A":
             return (AT, AT_BEGINNING_STRING)
-        if ch == "Z":
+        if ch in "Zz":
             return (AT, AT_END_STRING)
+        if ch == "C":
+            return (BYTE, None)
 
         # Common character escapes.
         if ch == "n":
@@ -557,6 +617,8 @@ class _Parser:
         # Hex escape.
         if ch == "x":
             return (LITERAL, self._hex_escape(esc_pos))
+        if ch == "Q":
+            return self._quoted_literal()
 
         # Octal escape — ``\0`` always starts one outside char classes.
         if ch == "0":
@@ -579,8 +641,8 @@ class _Parser:
 
         # Unicode property escapes.
         if ch in "pP":
-            name = self._unicode_property(ch, esc_pos)
-            negate = ch == "P"
+            name, negate = self._unicode_property(ch, esc_pos)
+            negate = negate ^ (ch == "P")
             items: list = []
             if negate:
                 items.append((NEGATE, None))
@@ -588,7 +650,7 @@ class _Parser:
             return (IN, items)
 
         # Unsupported PCRE2 / Perl escapes.
-        if ch in "CQEz":
+        if ch in "Ez":
             raise self._error(f"bad escape \\{ch}", esc_pos)
 
         # Literal escape — ``\.``, ``\\``, ``\*``, etc.
@@ -597,7 +659,23 @@ class _Parser:
     # -- shared escape helpers -----------------------------------------------
 
     def _hex_escape(self, esc_pos: int) -> int:
-        r"""Parse ``\xNN`` — two hex digits."""
+        r"""Parse ``\xNN`` or ``\x{NNNN}``."""
+        if not self._at_end and self._peek() == "{":
+            self._advance()
+            start = self.pos
+            while not self._at_end and self._peek() != "}":
+                self._advance()
+            if self._at_end:
+                raise self._error("incomplete escape \\x{...", esc_pos)
+            hex_str = self.source[start : self.pos]
+            self._advance()
+            try:
+                val = int(hex_str, 16)
+            except ValueError:
+                raise self._error(f"bad escape \\x{{{hex_str}}}", esc_pos) from None
+            if val > 0x10FFFF:
+                raise self._error(f"bad escape \\x{{{hex_str}}}", esc_pos)
+            return val
         if self.pos + 2 > len(self.source):
             raise self._error("incomplete escape \\x", esc_pos)
         hex_str = self.source[self.pos : self.pos + 2]
@@ -607,6 +685,18 @@ class _Parser:
             raise self._error(f"bad escape \\x{hex_str}", esc_pos) from None
         self.pos += 2
         return val
+
+    def _quoted_literal(self):
+        r"""Parse ``\Q...\E`` into literal AST items."""
+        items: list = []
+        while not self._at_end:
+            if self.source[self.pos : self.pos + 2] == "\\E":
+                self.pos += 2
+                break
+            items.append((LITERAL, ord(self._advance())))
+        if not items:
+            return []
+        return items if len(items) > 1 else items[0]
 
     def _octal_escape(self, first_digit: str, esc_pos: int) -> int:
         r"""Parse an octal escape.
@@ -620,19 +710,13 @@ class _Parser:
                 digits += self._advance()
             else:
                 break
-        val = int(digits, 8)
-        if val > 0o377:
-            raise self._error(
-                f"octal escape value \\{digits} outside of range 0-0o377",
-                esc_pos,
-            )
-        return val
+        return int(digits, 8)
 
-    def _unicode_property(self, esc_ch: str, esc_pos: int) -> str:
+    def _unicode_property(self, esc_ch: str, esc_pos: int) -> tuple[str, bool]:
         r"""Parse Unicode property name after ``\p`` or ``\P``.
 
         Accepts both ``\p{Name}`` (braced) and ``\pX`` (single-letter) forms.
-        Returns the resolved property name.
+        Returns ``(resolved_name, negate)``.
         """
         if self._at_end:
             raise self._error(f"bad escape \\{esc_ch}", esc_pos)
@@ -652,13 +736,19 @@ class _Parser:
             name = self._advance()
         if not name:
             raise self._error("empty Unicode property name", esc_pos)
+        negate = False
+        if name.startswith("^"):
+            negate = True
+            name = name[1:]
+            if not name:
+                raise self._error("empty Unicode property name", esc_pos)
         try:
             _resolve_property(name)
         except _re.error:
             raise self._error(
                 f"unknown Unicode property name: {name!r}", esc_pos,
             ) from None
-        return name
+        return name, negate
 
 
 # ---------------------------------------------------------------------------
