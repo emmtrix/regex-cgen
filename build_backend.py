@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
-from pathlib import Path
+import os
 import re
 import subprocess
+from contextlib import contextmanager
+from pathlib import Path
 from urllib.parse import urlsplit
 
 from setuptools import build_meta as _build_meta
@@ -82,6 +83,25 @@ def _render_pypi_readme(readme_text: str) -> str:
     return MARKDOWN_LINK_PATTERN.sub(replace_link, readme_text)
 
 
+def _current_build_version() -> str:
+    version = get_version(root=Path(__file__).resolve().parent)
+    return version.removeprefix("v")
+
+
+@contextmanager
+def _pinned_build_version():
+    env_var = "SETUPTOOLS_SCM_PRETEND_VERSION"
+    original = os.environ.get(env_var)
+    os.environ[env_var] = _current_build_version()
+    try:
+        yield
+    finally:
+        if original is None:
+            os.environ.pop(env_var, None)
+        else:
+            os.environ[env_var] = original
+
+
 @contextmanager
 def _temporary_pypi_readme():
     original = README_PATH.read_text(encoding="utf-8")
@@ -96,7 +116,7 @@ def _temporary_pypi_readme():
 
 
 def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
-    with _temporary_pypi_readme():
+    with _pinned_build_version(), _temporary_pypi_readme():
         return _build_meta.build_wheel(
             wheel_directory,
             config_settings=config_settings,
@@ -113,7 +133,7 @@ def build_editable(wheel_directory, config_settings=None, metadata_directory=Non
 
 
 def build_sdist(sdist_directory, config_settings=None):
-    with _temporary_pypi_readme():
+    with _pinned_build_version(), _temporary_pypi_readme():
         return _build_meta.build_sdist(sdist_directory, config_settings=config_settings)
 
 
@@ -126,7 +146,7 @@ def get_requires_for_build_editable(config_settings=None):
 
 
 def prepare_metadata_for_build_wheel(metadata_directory, config_settings=None):
-    with _temporary_pypi_readme():
+    with _pinned_build_version(), _temporary_pypi_readme():
         return _build_meta.prepare_metadata_for_build_wheel(
             metadata_directory, config_settings=config_settings
         )
