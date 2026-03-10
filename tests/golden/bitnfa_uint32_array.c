@@ -4,38 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint32_t regex_trans_0[256][2] = { ['a'] = { 0x00000002u, 0x00000000u } };
-static const uint32_t regex_trans_1[256][2] = { ['b'] = { 0x00000004u, 0x00000000u } };
-static const uint32_t regex_trans_2[256][2] = { ['c'] = { 0x00000008u, 0x00000000u } };
-static const uint32_t regex_trans_3[256][2] = { ['d'] = { 0x00000010u, 0x00000000u } };
-static const uint32_t regex_trans_4[256][2] = { ['e'] = { 0x00000020u, 0x00000000u } };
-static const uint32_t regex_trans_5[256][2] = { ['f'] = { 0x00000040u, 0x00000000u } };
-static const uint32_t regex_trans_6[256][2] = { ['g'] = { 0x00000080u, 0x00000000u } };
-static const uint32_t regex_trans_7[256][2] = { ['h'] = { 0x00000100u, 0x00000000u } };
-static const uint32_t regex_trans_8[256][2] = { ['i'] = { 0x00000200u, 0x00000000u } };
-static const uint32_t regex_trans_9[256][2] = { ['j'] = { 0x00000400u, 0x00000000u } };
-static const uint32_t regex_trans_10[256][2] = { ['k'] = { 0x00000800u, 0x00000000u } };
-static const uint32_t regex_trans_11[256][2] = { ['l'] = { 0x00001000u, 0x00000000u } };
-static const uint32_t regex_trans_12[256][2] = { ['m'] = { 0x00002000u, 0x00000000u } };
-static const uint32_t regex_trans_13[256][2] = { ['n'] = { 0x00004000u, 0x00000000u } };
-static const uint32_t regex_trans_14[256][2] = { ['o'] = { 0x00008000u, 0x00000000u } };
-static const uint32_t regex_trans_15[256][2] = { ['p'] = { 0x00010000u, 0x00000000u } };
-static const uint32_t regex_trans_16[256][2] = { ['q'] = { 0x00020000u, 0x00000000u } };
-static const uint32_t regex_trans_17[256][2] = { ['r'] = { 0x00040000u, 0x00000000u } };
-static const uint32_t regex_trans_18[256][2] = { ['s'] = { 0x00080000u, 0x00000000u } };
-static const uint32_t regex_trans_19[256][2] = { ['t'] = { 0x00100000u, 0x00000000u } };
-static const uint32_t regex_trans_20[256][2] = { ['u'] = { 0x00200000u, 0x00000000u } };
-static const uint32_t regex_trans_21[256][2] = { ['v'] = { 0x00400000u, 0x00000000u } };
-static const uint32_t regex_trans_22[256][2] = { ['w'] = { 0x00800000u, 0x00000000u } };
-static const uint32_t regex_trans_23[256][2] = { ['x'] = { 0x01000000u, 0x00000000u } };
-static const uint32_t regex_trans_24[256][2] = { ['y'] = { 0x02000000u, 0x00000000u } };
-static const uint32_t regex_trans_25[256][2] = { ['z'] = { 0x04000000u, 0x00000000u } };
-static const uint32_t regex_trans_26[256][2] = { ['0'] = { 0x08000000u, 0x00000000u } };
-static const uint32_t regex_trans_27[256][2] = { ['1'] = { 0x10000000u, 0x00000000u } };
-static const uint32_t regex_trans_28[256][2] = { ['2'] = { 0x20000000u, 0x00000000u } };
-static const uint32_t regex_trans_29[256][2] = { ['3'] = { 0x40000000u, 0x00000000u } };
-static const uint32_t regex_trans_30[256][2] = { ['4'] = { 0x80000000u, 0x00000000u } };
-static const uint32_t regex_trans_31[256][2] = { ['5'] = { 0x00000000u, 0x00000001u } };
+
 
 /* regex:    "abcdefghijklmnopqrstuvwxyz012345"
  * flags:    ""
@@ -49,38 +18,38 @@ bool regex_match(const char *input, size_t len) {
         unsigned char b = (unsigned char)input[i];
         uint32_t n0 = 0;
         uint32_t n1 = 0;
-        if (s0 & 0x00000001u) { n0 |= regex_trans_0[b][0]; n1 |= regex_trans_0[b][1]; }
-        if (s0 & 0x00000002u) { n0 |= regex_trans_1[b][0]; n1 |= regex_trans_1[b][1]; }
-        if (s0 & 0x00000004u) { n0 |= regex_trans_2[b][0]; n1 |= regex_trans_2[b][1]; }
-        if (s0 & 0x00000008u) { n0 |= regex_trans_3[b][0]; n1 |= regex_trans_3[b][1]; }
-        if (s0 & 0x00000010u) { n0 |= regex_trans_4[b][0]; n1 |= regex_trans_4[b][1]; }
-        if (s0 & 0x00000020u) { n0 |= regex_trans_5[b][0]; n1 |= regex_trans_5[b][1]; }
-        if (s0 & 0x00000040u) { n0 |= regex_trans_6[b][0]; n1 |= regex_trans_6[b][1]; }
-        if (s0 & 0x00000080u) { n0 |= regex_trans_7[b][0]; n1 |= regex_trans_7[b][1]; }
-        if (s0 & 0x00000100u) { n0 |= regex_trans_8[b][0]; n1 |= regex_trans_8[b][1]; }
-        if (s0 & 0x00000200u) { n0 |= regex_trans_9[b][0]; n1 |= regex_trans_9[b][1]; }
-        if (s0 & 0x00000400u) { n0 |= regex_trans_10[b][0]; n1 |= regex_trans_10[b][1]; }
-        if (s0 & 0x00000800u) { n0 |= regex_trans_11[b][0]; n1 |= regex_trans_11[b][1]; }
-        if (s0 & 0x00001000u) { n0 |= regex_trans_12[b][0]; n1 |= regex_trans_12[b][1]; }
-        if (s0 & 0x00002000u) { n0 |= regex_trans_13[b][0]; n1 |= regex_trans_13[b][1]; }
-        if (s0 & 0x00004000u) { n0 |= regex_trans_14[b][0]; n1 |= regex_trans_14[b][1]; }
-        if (s0 & 0x00008000u) { n0 |= regex_trans_15[b][0]; n1 |= regex_trans_15[b][1]; }
-        if (s0 & 0x00010000u) { n0 |= regex_trans_16[b][0]; n1 |= regex_trans_16[b][1]; }
-        if (s0 & 0x00020000u) { n0 |= regex_trans_17[b][0]; n1 |= regex_trans_17[b][1]; }
-        if (s0 & 0x00040000u) { n0 |= regex_trans_18[b][0]; n1 |= regex_trans_18[b][1]; }
-        if (s0 & 0x00080000u) { n0 |= regex_trans_19[b][0]; n1 |= regex_trans_19[b][1]; }
-        if (s0 & 0x00100000u) { n0 |= regex_trans_20[b][0]; n1 |= regex_trans_20[b][1]; }
-        if (s0 & 0x00200000u) { n0 |= regex_trans_21[b][0]; n1 |= regex_trans_21[b][1]; }
-        if (s0 & 0x00400000u) { n0 |= regex_trans_22[b][0]; n1 |= regex_trans_22[b][1]; }
-        if (s0 & 0x00800000u) { n0 |= regex_trans_23[b][0]; n1 |= regex_trans_23[b][1]; }
-        if (s0 & 0x01000000u) { n0 |= regex_trans_24[b][0]; n1 |= regex_trans_24[b][1]; }
-        if (s0 & 0x02000000u) { n0 |= regex_trans_25[b][0]; n1 |= regex_trans_25[b][1]; }
-        if (s0 & 0x04000000u) { n0 |= regex_trans_26[b][0]; n1 |= regex_trans_26[b][1]; }
-        if (s0 & 0x08000000u) { n0 |= regex_trans_27[b][0]; n1 |= regex_trans_27[b][1]; }
-        if (s0 & 0x10000000u) { n0 |= regex_trans_28[b][0]; n1 |= regex_trans_28[b][1]; }
-        if (s0 & 0x20000000u) { n0 |= regex_trans_29[b][0]; n1 |= regex_trans_29[b][1]; }
-        if (s0 & 0x40000000u) { n0 |= regex_trans_30[b][0]; n1 |= regex_trans_30[b][1]; }
-        if (s0 & 0x80000000u) { n0 |= regex_trans_31[b][0]; n1 |= regex_trans_31[b][1]; }
+        if (s0 & 0x00000001u) { n0 |= ((b == 'a') ? 0x00000002u : 0u); }
+        if (s0 & 0x00000002u) { n0 |= ((b == 'b') ? 0x00000004u : 0u); }
+        if (s0 & 0x00000004u) { n0 |= ((b == 'c') ? 0x00000008u : 0u); }
+        if (s0 & 0x00000008u) { n0 |= ((b == 'd') ? 0x00000010u : 0u); }
+        if (s0 & 0x00000010u) { n0 |= ((b == 'e') ? 0x00000020u : 0u); }
+        if (s0 & 0x00000020u) { n0 |= ((b == 'f') ? 0x00000040u : 0u); }
+        if (s0 & 0x00000040u) { n0 |= ((b == 'g') ? 0x00000080u : 0u); }
+        if (s0 & 0x00000080u) { n0 |= ((b == 'h') ? 0x00000100u : 0u); }
+        if (s0 & 0x00000100u) { n0 |= ((b == 'i') ? 0x00000200u : 0u); }
+        if (s0 & 0x00000200u) { n0 |= ((b == 'j') ? 0x00000400u : 0u); }
+        if (s0 & 0x00000400u) { n0 |= ((b == 'k') ? 0x00000800u : 0u); }
+        if (s0 & 0x00000800u) { n0 |= ((b == 'l') ? 0x00001000u : 0u); }
+        if (s0 & 0x00001000u) { n0 |= ((b == 'm') ? 0x00002000u : 0u); }
+        if (s0 & 0x00002000u) { n0 |= ((b == 'n') ? 0x00004000u : 0u); }
+        if (s0 & 0x00004000u) { n0 |= ((b == 'o') ? 0x00008000u : 0u); }
+        if (s0 & 0x00008000u) { n0 |= ((b == 'p') ? 0x00010000u : 0u); }
+        if (s0 & 0x00010000u) { n0 |= ((b == 'q') ? 0x00020000u : 0u); }
+        if (s0 & 0x00020000u) { n0 |= ((b == 'r') ? 0x00040000u : 0u); }
+        if (s0 & 0x00040000u) { n0 |= ((b == 's') ? 0x00080000u : 0u); }
+        if (s0 & 0x00080000u) { n0 |= ((b == 't') ? 0x00100000u : 0u); }
+        if (s0 & 0x00100000u) { n0 |= ((b == 'u') ? 0x00200000u : 0u); }
+        if (s0 & 0x00200000u) { n0 |= ((b == 'v') ? 0x00400000u : 0u); }
+        if (s0 & 0x00400000u) { n0 |= ((b == 'w') ? 0x00800000u : 0u); }
+        if (s0 & 0x00800000u) { n0 |= ((b == 'x') ? 0x01000000u : 0u); }
+        if (s0 & 0x01000000u) { n0 |= ((b == 'y') ? 0x02000000u : 0u); }
+        if (s0 & 0x02000000u) { n0 |= ((b == 'z') ? 0x04000000u : 0u); }
+        if (s0 & 0x04000000u) { n0 |= ((b == '0') ? 0x08000000u : 0u); }
+        if (s0 & 0x08000000u) { n0 |= ((b == '1') ? 0x10000000u : 0u); }
+        if (s0 & 0x10000000u) { n0 |= ((b == '2') ? 0x20000000u : 0u); }
+        if (s0 & 0x20000000u) { n0 |= ((b == '3') ? 0x40000000u : 0u); }
+        if (s0 & 0x40000000u) { n0 |= ((b == '4') ? 0x80000000u : 0u); }
+        if (s0 & 0x80000000u) { n1 |= ((b == '5') ? 0x00000001u : 0u); }
         s0 = n0;
         s1 = n1;
     }
