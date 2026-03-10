@@ -1,6 +1,4 @@
-# emx-regex-cgen
-
-**Regex to C Code Generator** — compile regular expressions into portable,
+**emmtrix Regex-to-C Code Generator (emx-regex-cgen)** compiles regular expressions into portable,
 static C code for embedded and performance-critical applications.
 
 [![CI](https://github.com/emmtrix/emx-regex-cgen/actions/workflows/ci.yml/badge.svg)](https://github.com/emmtrix/emx-regex-cgen/actions/workflows/ci.yml)
