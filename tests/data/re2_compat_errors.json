@@ -1,6 +1,6 @@
 {
   "generated_from": "tests/data/re2_compat_results.json",
-  "total_expected_errors": 1678,
+  "total_expected_errors": 1650,
   "errors": [
     {
       "case_idx": 180,
@@ -5729,27 +5729,6 @@
       "error": "PatternError: bad escape \\p at position 3"
     },
     {
-      "case_idx": 213,
-      "engine": "bitnfa",
-      "pattern": "\\bX",
-      "flags": "mii",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 214,
-      "engine": "bitnfa",
-      "pattern": "\\BX",
-      "flags": "mii",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 225,
-      "engine": "bitnfa",
-      "pattern": "\\bch\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
       "case_idx": 227,
       "engine": "bitnfa",
       "pattern": "A\\z",
@@ -5827,27 +5806,6 @@
       "error": "ValueError: NFA has 3724 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
-      "case_idx": 345,
-      "engine": "bitnfa",
-      "pattern": "a\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 346,
-      "engine": "bitnfa",
-      "pattern": "\\babc\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 392,
-      "engine": "bitnfa",
-      "pattern": "\\Biss\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
       "case_idx": 419,
       "engine": "bitnfa",
       "pattern": "(?U)<.*>",
@@ -5867,27 +5825,6 @@
       "pattern": "^((a+)(?U)([ab]+)(?-U)([bc]+)(\\w*))",
       "flags": "",
       "error": "PatternError: unknown extension ?U at position 7"
-    },
-    {
-      "case_idx": 426,
-      "engine": "bitnfa",
-      "pattern": "\\Biss\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 428,
-      "engine": "bitnfa",
-      "pattern": "\\Biss\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 429,
-      "engine": "bitnfa",
-      "pattern": "\\Biss\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
     },
     {
       "case_idx": 441,
@@ -5944,20 +5881,6 @@
       "pattern": "(?P<abc>abc(?P<def>def)(?P<abc>xyz))",
       "flags": "",
       "error": "PatternError: redefinition of group name 'abc' as group 3; was group 1 at position 27"
-    },
-    {
-      "case_idx": 483,
-      "engine": "bitnfa",
-      "pattern": "\\b.*",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 484,
-      "engine": "bitnfa",
-      "pattern": "\\b.*",
-      "flags": "s",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
     },
     {
       "case_idx": 491,
@@ -6030,20 +5953,6 @@
       "error": "PatternError: redefinition of group name 'A' as group 2; was group 1 at position 13"
     },
     {
-      "case_idx": 567,
-      "engine": "bitnfa",
-      "pattern": "\\bthe cat\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 569,
-      "engine": "bitnfa",
-      "pattern": "\\babc\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
       "case_idx": 577,
       "engine": "bitnfa",
       "pattern": "(?i)a(?-i)b|c",
@@ -6056,20 +5965,6 @@
       "pattern": "abc\\z",
       "flags": "",
       "error": "PatternError: bad escape \\z at position 3"
-    },
-    {
-      "case_idx": 581,
-      "engine": "bitnfa",
-      "pattern": "abc\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 582,
-      "engine": "bitnfa",
-      "pattern": "abc\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
     },
     {
       "case_idx": 618,
@@ -10699,20 +10594,6 @@
       "error": "PatternError: bad escape \\p at position 1"
     },
     {
-      "case_idx": 1417,
-      "engine": "bitnfa",
-      "pattern": "(.+)\\b(.+)",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 1418,
-      "engine": "bitnfa",
-      "pattern": "(.+)\\b(.+)",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
       "case_idx": 1496,
       "engine": "bitnfa",
       "pattern": "[\\x{100}-\\x{200}]",
@@ -10781,13 +10662,6 @@
       "pattern": "^[\\p{Arabic}]",
       "flags": "",
       "error": "PatternError: bad escape \\p at position 2"
-    },
-    {
-      "case_idx": 1784,
-      "engine": "bitnfa",
-      "pattern": "\\bthe cat\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
     },
     {
       "case_idx": 1796,
@@ -10937,34 +10811,6 @@
       "error": "PatternError: bad escape \\z at position 3"
     },
     {
-      "case_idx": 2205,
-      "engine": "bitnfa",
-      "pattern": "\\bX",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 2206,
-      "engine": "bitnfa",
-      "pattern": "\\BX",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 2207,
-      "engine": "bitnfa",
-      "pattern": "X\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 2208,
-      "engine": "bitnfa",
-      "pattern": "X\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
       "case_idx": 2276,
       "engine": "bitnfa",
       "pattern": "[\\x{100}-\\x{200}]",
@@ -10991,13 +10837,6 @@
       "pattern": "[Qz-\\x{200}]",
       "flags": "",
       "error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
-    },
-    {
-      "case_idx": 2307,
-      "engine": "bitnfa",
-      "pattern": "\\bthe cat\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
     },
     {
       "case_idx": 2313,
@@ -11621,41 +11460,6 @@
       "pattern": "\\p{Carian}\\p{Cham}\\p{Kayah_Li}\\p{Lepcha}\\p{Lycian}\\p{Lydian}\\p{Ol_Chiki}\\p{Rejang}\\p{Saurashtra}\\p{Sundanese}\\p{Vai}",
       "flags": "",
       "error": "PatternError: bad escape \\p at position 0"
-    },
-    {
-      "case_idx": 2422,
-      "engine": "bitnfa",
-      "pattern": "\\b...\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 2423,
-      "engine": "bitnfa",
-      "pattern": "\\b...\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 2424,
-      "engine": "bitnfa",
-      "pattern": "\\b...\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 2570,
-      "engine": "bitnfa",
-      "pattern": "\\b.+?\\b",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
-    },
-    {
-      "case_idx": 2571,
-      "engine": "bitnfa",
-      "pattern": "caf\\B.+?\\B",
-      "flags": "",
-      "error": "ValueError: \\b / \\B word-boundary assertions are not supported by the bitnfa engine"
     },
     {
       "case_idx": 2572,
