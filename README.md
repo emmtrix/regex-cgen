@@ -29,11 +29,15 @@ static C code for embedded and performance-critical applications.
 ## Installation
 
 ```bash
-pip install -e ".[dev]"
+pip install emx-regex-cgen
 ```
 
 The distribution name is `emx-regex-cgen`. The Python import path is
 `emx_regex_cgen`.
+
+After installation, you can use the package either as a CLI tool via
+`emx-regex-cgen` or as a Python library via
+`from emx_regex_cgen import generate`.
 
 ## Quick Start
 
@@ -66,6 +70,60 @@ result = generate(r"[\x80-\xff]+", encoding="bytes")
 
 # Use the bit-parallel NFA backend instead of DFA
 result = generate(r"hello", engine="bitnfa")
+```
+
+#### `generate()` options
+
+```python
+generate(
+    pattern,
+    flags="",
+    *,
+    emit_main=False,
+    prefix="regex",
+    encoding="utf8",
+    engine="dfa",
+    row_dedup="auto",
+    alphabet_compression="auto",
+    size_threshold=8192,
+    early_exit=False,
+)
+```
+
+Library arguments map directly to the generator settings:
+
+| Argument | Type | Default | Meaning |
+|----------|------|---------|---------|
+| `pattern` | `str` | â€” | Regular expression to compile. |
+| `flags` | `str` | `""` | Regex flags: `i` (ignore case), `s` (dot-all), `m` (multiline), `x` (verbose syntax accepted for compatibility). |
+| `emit_main` | `bool` | `False` | Include a standalone `main()` function in the generated C code. |
+| `prefix` | `str` | `"regex"` | Prefix for generated C identifiers such as `regex_match`. |
+| `encoding` | `str` | `"utf8"` | `"utf8"` for Unicode-aware UTF-8 input, or `"bytes"` for raw byte semantics. |
+| `engine` | `str` | `"dfa"` | Backend engine: `"dfa"` or `"bitnfa"`. |
+| `row_dedup` | `str` | `"auto"` | DFA only: `"yes"`, `"no"`, or `"auto"` for transition-row deduplication. |
+| `alphabet_compression` | `str` | `"auto"` | DFA only: `"yes"`, `"no"`, or `"auto"` for byte equivalence-class compression. |
+| `size_threshold` | `int` | `8192` | DFA only: threshold used by `"auto"` for `row_dedup` and `alphabet_compression`. |
+| `early_exit` | `bool` | `False` | DFA only: break out of the loop once the dead state is reached. |
+
+Example with multiple options:
+
+```python
+from emx_regex_cgen import generate
+
+result = generate(
+    r"[a-z]+\d+",
+    flags="i",
+    prefix="user_id",
+    emit_main=True,
+    engine="dfa",
+    encoding="utf8",
+    row_dedup="yes",
+    alphabet_compression="auto",
+    size_threshold=4096,
+    early_exit=True,
+)
+
+print(result.render())
 ```
 
 ### CLI
@@ -291,6 +349,9 @@ git clone --recurse-submodules https://github.com/emmtrix/emx-regex-cgen.git
 cd emx-regex-cgen
 
 # Install
+pip install emx-regex-cgen
+
+# Or, for local development
 pip install -e ".[dev]"
 
 # Test
