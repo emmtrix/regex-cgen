@@ -31,10 +31,14 @@ def _load_codegen_cases() -> list[dict]:
 def _load_codegen_errors() -> dict[tuple[str, int], str]:
     with open(CODEGEN_ERRORS_JSON, encoding="utf-8") as fh:
         data = json.load(fh)
-    return {
-        (entry["engine"], entry["case_idx"]): entry["error"]
-        for entry in data["errors"]
-    }
+    errors: dict[tuple[str, int], str] = {}
+    for entry in data["errors"]:
+        case_idx = entry["case_idx"]
+        for engine in ("dfa", "bitnfa"):
+            error = entry.get(f"{engine}_error")
+            if error is not None:
+                errors[(engine, case_idx)] = error
+    return errors
 
 
 def pytest_configure(config: pytest.Config) -> None:

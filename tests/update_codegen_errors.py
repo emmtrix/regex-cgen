@@ -35,28 +35,32 @@ def main() -> None:
     warnings.simplefilter("ignore", FutureWarning)
 
     errors: list[dict[str, object]] = []
-    for engine in ("dfa", "bitnfa"):
-        for case_idx, case in enumerate(cases):
-            if not case.get("subjects"):
-                continue
-            pattern = case["pattern"]
-            flags = "".join(ch for ch in case.get("flags", "") if ch in "imsx")
+    total_expected_errors = 0
+    for case_idx, case in enumerate(cases):
+        if not case.get("subjects"):
+            continue
+        pattern = case["pattern"]
+        flags = "".join(ch for ch in case.get("flags", "") if ch in "imsx")
+        entry: dict[str, object] = {
+            "case_idx": case_idx,
+            "pattern": pattern,
+            "flags": flags,
+        }
+
+        for engine in ("dfa", "bitnfa"):
             try:
                 generate(pattern, flags=flags, engine=engine)
             except Exception as exc:
-                errors.append(
-                    {
-                        "case_idx": case_idx,
-                        "engine": engine,
-                        "pattern": pattern,
-                        "flags": flags,
-                        "error": _format_exception(exc),
-                    }
-                )
+                entry[f"{engine}_error"] = _format_exception(exc)
+                total_expected_errors += 1
+
+        if "dfa_error" in entry or "bitnfa_error" in entry:
+            errors.append(entry)
 
     payload = {
         "generated_from": "tests/data/re2_compat_results.json",
-        "total_expected_errors": len(errors),
+        "total_expected_errors": total_expected_errors,
+        "total_patterns_with_errors": len(errors),
         "errors": errors,
     }
     with open(ERRORS_JSON, "w", encoding="utf-8", newline="\n") as fh:

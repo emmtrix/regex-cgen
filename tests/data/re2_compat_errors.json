@@ -1,1490 +1,1009 @@
 {
   "generated_from": "tests/data/re2_compat_results.json",
   "total_expected_errors": 212,
+  "total_patterns_with_errors": 158,
   "errors": [
     {
       "case_idx": 180,
-      "engine": "bitnfa",
       "pattern": "\\777",
       "flags": "",
-      "error": "error: octal escape value \\777 outside of range 0-0o377 at position 0"
+      "dfa_error": "error: octal escape value \\777 outside of range 0-0o377 at position 0",
+      "bitnfa_error": "error: octal escape value \\777 outside of range 0-0o377 at position 0"
     },
     {
       "case_idx": 202,
-      "engine": "bitnfa",
       "pattern": "[\\W\\p{Any}]",
       "flags": "",
-      "error": "ValueError: NFA has 19553 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19553 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 203,
-      "engine": "bitnfa",
       "pattern": "[\\W\\pL]",
       "flags": "",
-      "error": "ValueError: NFA has 4948 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4961 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 227,
-      "engine": "bitnfa",
       "pattern": "A\\z",
       "flags": "",
-      "error": "error: bad escape \\z at position 1"
+      "dfa_error": "error: bad escape \\z at position 1",
+      "bitnfa_error": "error: bad escape \\z at position 1"
     },
     {
       "case_idx": 229,
-      "engine": "bitnfa",
       "pattern": "ab\\z",
       "flags": "mii",
-      "error": "error: bad escape \\z at position 2"
+      "dfa_error": "error: bad escape \\z at position 2",
+      "bitnfa_error": "error: bad escape \\z at position 2"
     },
     {
       "case_idx": 238,
-      "engine": "bitnfa",
       "pattern": "[\\x00-\\x2f\\x11-\\xff]{4,}",
       "flags": "",
-      "error": "ValueError: NFA has 646 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 646 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 241,
-      "engine": "bitnfa",
       "pattern": "[\\v\\x{dc00}]+",
       "flags": "",
-      "error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\udc00' in position 0: surrogates not allowed"
+      "dfa_error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\udc00' in position 0: surrogates not allowed",
+      "bitnfa_error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\udc00' in position 0: surrogates not allowed"
     },
     {
       "case_idx": 250,
-      "engine": "bitnfa",
       "pattern": "a\\x{d800}b",
       "flags": "",
-      "error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed"
+      "dfa_error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed",
+      "bitnfa_error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed"
     },
     {
       "case_idx": 255,
-      "engine": "bitnfa",
       "pattern": "(?i:A{1,}\\6666666666)",
       "flags": "",
-      "error": "error: octal escape value \\666 outside of range 0-0o377 at position 9"
+      "dfa_error": "error: octal escape value \\666 outside of range 0-0o377 at position 9",
+      "bitnfa_error": "error: octal escape value \\666 outside of range 0-0o377 at position 9"
     },
     {
       "case_idx": 265,
-      "engine": "bitnfa",
       "pattern": "\\777",
       "flags": "",
-      "error": "error: octal escape value \\777 outside of range 0-0o377 at position 0"
+      "dfa_error": "error: octal escape value \\777 outside of range 0-0o377 at position 0",
+      "bitnfa_error": "error: octal escape value \\777 outside of range 0-0o377 at position 0"
     },
     {
       "case_idx": 287,
-      "engine": "bitnfa",
       "pattern": "[\\W\\p{Any}]",
       "flags": "",
-      "error": "ValueError: NFA has 19553 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19553 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 288,
-      "engine": "bitnfa",
       "pattern": "[\\W\\pL]",
       "flags": "",
-      "error": "ValueError: NFA has 4948 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4961 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 289,
-      "engine": "bitnfa",
       "pattern": "\\pP",
       "flags": "",
-      "error": "ValueError: NFA has 436 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 436 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 320,
-      "engine": "bitnfa",
       "pattern": "b[\\x{00FF}-\\x{FFEE}]",
       "flags": "i",
-      "error": "ValueError: NFA has 3724 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 3724 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 419,
-      "engine": "bitnfa",
       "pattern": "(?U)<.*>",
       "flags": "",
-      "error": "error: unknown extension ?U at position 1"
+      "dfa_error": "error: unknown extension ?U at position 1",
+      "bitnfa_error": "error: unknown extension ?U at position 1"
     },
     {
       "case_idx": 422,
-      "engine": "bitnfa",
       "pattern": "(?U)={3,}?",
       "flags": "",
-      "error": "error: unknown extension ?U at position 1"
+      "dfa_error": "error: unknown extension ?U at position 1",
+      "bitnfa_error": "error: unknown extension ?U at position 1"
     },
     {
       "case_idx": 425,
-      "engine": "bitnfa",
       "pattern": "^((a+)(?U)([ab]+)(?-U)([bc]+)(\\w*))",
       "flags": "",
-      "error": "error: unknown extension ?U at position 7"
+      "dfa_error": "error: unknown extension ?U at position 7",
+      "bitnfa_error": "error: unknown extension ?U at position 7"
     },
     {
       "case_idx": 441,
-      "engine": "bitnfa",
       "pattern": "((?-i)[[:lower:]])[[:lower:]]",
       "flags": "i",
-      "error": "error: global flags not at the start of the expression at position 2"
+      "dfa_error": "error: global flags not at the start of the expression at position 2",
+      "bitnfa_error": "error: global flags not at the start of the expression at position 2"
     },
     {
       "case_idx": 442,
-      "engine": "bitnfa",
       "pattern": "(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\w+)\\s+(\\270)",
       "flags": "",
-      "error": "ValueError: NFA has 543 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 543 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 458,
-      "engine": "bitnfa",
       "pattern": "a(?i)b",
       "flags": "",
-      "error": "error: global flags not at the start of the expression at position 2"
+      "dfa_error": "error: global flags not at the start of the expression at position 2",
+      "bitnfa_error": "error: global flags not at the start of the expression at position 2"
     },
     {
       "case_idx": 459,
-      "engine": "bitnfa",
       "pattern": "(a(?i)b)",
       "flags": "",
-      "error": "error: global flags not at the start of the expression at position 3"
+      "dfa_error": "error: global flags not at the start of the expression at position 3",
+      "bitnfa_error": "error: global flags not at the start of the expression at position 3"
     },
     {
       "case_idx": 460,
-      "engine": "bitnfa",
       "pattern": "\\Q\\E",
       "flags": "",
-      "error": "error: bad escape \\Q at position 0"
+      "dfa_error": "error: bad escape \\Q at position 0",
+      "bitnfa_error": "error: bad escape \\Q at position 0"
     },
     {
       "case_idx": 461,
-      "engine": "bitnfa",
       "pattern": "a\\Q\\E",
       "flags": "",
-      "error": "error: bad escape \\Q at position 1"
+      "dfa_error": "error: bad escape \\Q at position 1",
+      "bitnfa_error": "error: bad escape \\Q at position 1"
     },
     {
       "case_idx": 462,
-      "engine": "bitnfa",
       "pattern": "a\\Q\\Eb",
       "flags": "",
-      "error": "error: bad escape \\Q at position 1"
+      "dfa_error": "error: bad escape \\Q at position 1",
+      "bitnfa_error": "error: bad escape \\Q at position 1"
     },
     {
       "case_idx": 491,
-      "engine": "bitnfa",
       "pattern": "(?i)(?-i)AbCd",
       "flags": "",
-      "error": "error: global flags not at the start of the expression at position 5"
+      "dfa_error": "error: global flags not at the start of the expression at position 5",
+      "bitnfa_error": "error: global flags not at the start of the expression at position 5"
     },
     {
       "case_idx": 492,
-      "engine": "bitnfa",
       "pattern": "(){2,4294967295}",
       "flags": "",
-      "error": "OverflowError: the repetition number is too large"
+      "dfa_error": "OverflowError: the repetition number is too large",
+      "bitnfa_error": "OverflowError: the repetition number is too large"
     },
     {
       "case_idx": 577,
-      "engine": "bitnfa",
       "pattern": "(?i)a(?-i)b|c",
       "flags": "",
-      "error": "error: global flags not at the start of the expression at position 6"
+      "dfa_error": "error: global flags not at the start of the expression at position 6",
+      "bitnfa_error": "error: global flags not at the start of the expression at position 6"
     },
     {
       "case_idx": 580,
-      "engine": "bitnfa",
       "pattern": "abc\\z",
       "flags": "",
-      "error": "error: bad escape \\z at position 3"
+      "dfa_error": "error: bad escape \\z at position 3",
+      "bitnfa_error": "error: bad escape \\z at position 3"
     },
     {
       "case_idx": 618,
-      "engine": "bitnfa",
       "pattern": "a(?<ONE>b)c(?<TWO>d)e",
       "flags": "",
-      "error": "error: unknown extension ?< at position 2"
+      "dfa_error": "error: unknown extension ?< at position 2",
+      "bitnfa_error": "error: unknown extension ?< at position 2"
     },
     {
       "case_idx": 619,
-      "engine": "bitnfa",
       "pattern": "a(?<ONE>b)c(?<TWO>d)e",
       "flags": "",
-      "error": "error: unknown extension ?< at position 2"
+      "dfa_error": "error: unknown extension ?< at position 2",
+      "bitnfa_error": "error: unknown extension ?< at position 2"
     },
     {
       "case_idx": 632,
-      "engine": "bitnfa",
       "pattern": "(?<A>.)(?<B>.)",
       "flags": "",
-      "error": "error: unknown extension ?< at position 1"
+      "dfa_error": "error: unknown extension ?< at position 1",
+      "bitnfa_error": "error: unknown extension ?< at position 1"
     },
     {
       "case_idx": 639,
-      "engine": "bitnfa",
       "pattern": "a(?<named>b)c",
       "flags": "ssix",
-      "error": "error: unknown extension ?< at position 2"
+      "dfa_error": "error: unknown extension ?< at position 2",
+      "bitnfa_error": "error: unknown extension ?< at position 2"
     },
     {
       "case_idx": 644,
-      "engine": "bitnfa",
       "pattern": "(?<A>a)|(?<A>b)",
       "flags": "ms",
-      "error": "error: unknown extension ?< at position 1"
+      "dfa_error": "error: unknown extension ?< at position 1",
+      "bitnfa_error": "error: unknown extension ?< at position 1"
     },
     {
       "case_idx": 690,
-      "engine": "bitnfa",
       "pattern": "a(?<namED_1>b)c",
       "flags": "ssix",
-      "error": "error: unknown extension ?< at position 2"
+      "dfa_error": "error: unknown extension ?< at position 2",
+      "bitnfa_error": "error: unknown extension ?< at position 2"
     },
     {
       "case_idx": 691,
-      "engine": "bitnfa",
       "pattern": "a(?<namedverylongbutperfectlylegalsoyoushouldnthaveaproblem_1>b)c",
       "flags": "ssix",
-      "error": "error: unknown extension ?< at position 2"
+      "dfa_error": "error: unknown extension ?< at position 2",
+      "bitnfa_error": "error: unknown extension ?< at position 2"
     },
     {
       "case_idx": 701,
-      "engine": "bitnfa",
       "pattern": "()\\Q\\E*]",
       "flags": "",
-      "error": "error: bad escape \\Q at position 2"
+      "dfa_error": "error: bad escape \\Q at position 2",
+      "bitnfa_error": "error: bad escape \\Q at position 2"
     },
     {
       "case_idx": 719,
-      "engine": "bitnfa",
       "pattern": "abc#abcdef#defghi#ghijkl#\n  abc#abcdef#defghi#ghijkl#jklmno#\n  abc#abcdef#defghi#ghijkl#jklmno#mnopqr#\n\\= Expect no match\n  abc#abcdef#defghi#ghijkl\n  abc#abcdef#defghi#ghXjkl#\n\n% # Define the routine \"weekendday\" which matches Saturday or Sunday, and\n  # returns the Sat",
       "flags": "",
-      "error": "ValueError: NFA has 271 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 271 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 722,
-      "engine": "bitnfa",
       "pattern": "ab\\Cde",
       "flags": "i",
-      "error": "error: bad escape \\C at position 2"
+      "dfa_error": "error: bad escape \\C at position 2",
+      "bitnfa_error": "error: bad escape \\C at position 2"
     },
     {
       "case_idx": 723,
-      "engine": "bitnfa",
       "pattern": "ab\\Cde",
       "flags": "",
-      "error": "error: bad escape \\C at position 2"
+      "dfa_error": "error: bad escape \\C at position 2",
+      "bitnfa_error": "error: bad escape \\C at position 2"
     },
     {
       "case_idx": 728,
-      "engine": "bitnfa",
       "pattern": "\\C{3,5}",
       "flags": "",
-      "error": "error: bad escape \\C at position 0"
+      "dfa_error": "error: bad escape \\C at position 0",
+      "bitnfa_error": "error: bad escape \\C at position 0"
     },
     {
       "case_idx": 733,
-      "engine": "bitnfa",
       "pattern": "ch - tests \\C at end of subject\n    ab\n\n",
       "flags": "",
-      "error": "error: bad escape \\C at position 11 (line 1, column 12)"
+      "dfa_error": "error: bad escape \\C at position 11 (line 1, column 12)",
+      "bitnfa_error": "error: bad escape \\C at position 11 (line 1, column 12)"
     },
     {
       "case_idx": 757,
-      "engine": "bitnfa",
       "pattern": "^\\p{Latin}",
       "flags": "",
-      "error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 758,
-      "engine": "bitnfa",
       "pattern": "^\\p{Latin}",
       "flags": "",
-      "error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 759,
-      "engine": "bitnfa",
       "pattern": "^\\p{Latin}",
       "flags": "",
-      "error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 763,
-      "engine": "bitnfa",
       "pattern": "^\\p{Cyrillic}",
       "flags": "",
-      "error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 764,
-      "engine": "bitnfa",
       "pattern": "^\\p{Cyrillic}",
       "flags": "",
-      "error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 765,
-      "engine": "bitnfa",
       "pattern": "^\\p{Cyrillic}",
       "flags": "",
-      "error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 766,
-      "engine": "bitnfa",
       "pattern": "^\\p{Arabic}",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 767,
-      "engine": "bitnfa",
       "pattern": "^\\p{Arabic}",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 768,
-      "engine": "bitnfa",
       "pattern": "^\\p{Arabic}",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 826,
-      "engine": "bitnfa",
       "pattern": "^\\p{Han}",
       "flags": "",
-      "error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 827,
-      "engine": "bitnfa",
       "pattern": "^\\p{Han}",
       "flags": "",
-      "error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 828,
-      "engine": "bitnfa",
       "pattern": "^\\p{Han}",
       "flags": "",
-      "error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 961,
-      "engine": "bitnfa",
       "pattern": "^\\p{Common}",
       "flags": "",
-      "error": "ValueError: NFA has 631 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 631 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1056,
-      "engine": "bitnfa",
       "pattern": "^\\p{Latin}",
       "flags": "",
-      "error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1057,
-      "engine": "bitnfa",
       "pattern": "^\\p{Latin}",
       "flags": "",
-      "error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1058,
-      "engine": "bitnfa",
       "pattern": "^\\p{Latin}",
       "flags": "",
-      "error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 589 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1062,
-      "engine": "bitnfa",
       "pattern": "^\\p{Cyrillic}",
       "flags": "",
-      "error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1063,
-      "engine": "bitnfa",
       "pattern": "^\\p{Cyrillic}",
       "flags": "",
-      "error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1064,
-      "engine": "bitnfa",
       "pattern": "^\\p{Cyrillic}",
       "flags": "",
-      "error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 324 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1071,
-      "engine": "bitnfa",
       "pattern": "^\\p{Arabic}",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1072,
-      "engine": "bitnfa",
       "pattern": "^\\p{Arabic}",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1073,
-      "engine": "bitnfa",
       "pattern": "^\\p{Arabic}",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1146,
-      "engine": "bitnfa",
       "pattern": "^\\p{Han}",
       "flags": "",
-      "error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1147,
-      "engine": "bitnfa",
       "pattern": "^\\p{Han}",
       "flags": "",
-      "error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1148,
-      "engine": "bitnfa",
       "pattern": "^\\p{Han}",
       "flags": "",
-      "error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1335,
-      "engine": "bitnfa",
       "pattern": "^\\p{Common}",
       "flags": "",
-      "error": "ValueError: NFA has 631 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 631 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1496,
-      "engine": "bitnfa",
       "pattern": "[\\x{100}-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1497,
-      "engine": "bitnfa",
       "pattern": "[z-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1499,
-      "engine": "bitnfa",
       "pattern": "[Q\\x{100}-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1500,
-      "engine": "bitnfa",
       "pattern": "[Qz-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1619,
-      "engine": "bitnfa",
       "pattern": "    \\x{34e}\\x{34e}X\n    \\x04X\n    \\x{1100}X\n    \\x{1100}\\x{34e}X\n    \\x{1b04}\\x{1b04}X\n    *These match up to the roman letters\n    \\x{1111}\\x{1111}L,L\n    \\x{1111}\\x{1111}\\x{1169}L,L,V\n    \\x{1111}\\x{ae4c}L, LV\n    \\x{1111}\\x{ad89}L, LVT\n    \\x{1111}\\x{ae4c}\\x{1169}L, LV, V\n    \\x{1111}\\x{ae4c}\\x{1169}\\x{1169}L, LV, V, V\n    \\x{1111}\\x{ae4c}\\x{1169}\\x{11fe}L, LV, V, T\n    \\x{1111}\\x{ad89}\\x{11fe}L, LVT, T\n    \\x{1111}\\x{ad89}\\x{11fe}\\x{11fe}L, LVT, T, T\n    \\x{ad89}\\x{11fe}\\x{11fe}LVT, T, T\n    *These match just the first codepoint (invalid sequence)\n    \\x{1111}\\x{11fe}L, T\n    \\x{ae4c}\\x{1111}LV, L\n    \\x{ae4c}\\x{ae4c}LV, LV\n    \\x{ae4c}\\x{ad89}LV, LVT\n    \\x{1169}\\x{1111}V, L\n    \\x{1169}\\x{ae4c}V, LV\n    \\x{1169}\\x{ad89}V, LVT\n    \\x{ad89}\\x{1111}LVT, L\n    \\x{ad89}\\x{1169}LVT, V\n    \\x{ad89}\\x{ae4c}LVT, LV\n    \\x{ad89}\\x{ad89}LVT, LVT\n    \\x{11fe}\\x{1111}T, L\n    \\x{11fe}\\x{1169}T, V\n    \\x{11fe}\\x{ae4c}T, LV\n    \\x{11fe}\\x{ad89}T, LVT\n    *Test extend and spacing mark\n    \\x{1111}\\x{ae4c}\\x{0711}L, LV, extend\n    \\x{1111}\\x{ae4c}\\x{1b04}L, LV, spacing mark\n    \\x{1111}\\x{ae4c}\\x{1b04}\\x{0711}\\x{1b04}L, LV, spacing mark, extend, spacing mark\n    *Test CR, LF, and control\n    \\x0d\\x{0711}CR, extend\n    \\x0d\\x{1b04}CR, spacingmark\n    \\x0a\\x{0711}LF, extend\n    \\x0a\\x{1b04}LF, spacingmark\n    \\x0b\\x{0711}Control, extend\n    \\x09\\x{1b04}Control, spacingmark\n    *Test Extended Pictographic after bug fix\n    \\x{261d}\\x{261d}B              Extended_Pictographic Extended_Pictographic \n    \\x{261D}\\x{1F3FB}\\x{261d}B     Extended_Pictographic Extend E-P\n    \\x{261D}\\x{1F3FB}\\x{200d}\\x{261d}B     Extended_Pictographic Extend ZWJ E-P\n    \\x{1f3f3}\\x{fe0f}\\x{200d}\\x{1f308}\\x{1f3f4}\\x{200d}\\x{2620}\\x{fe0f}\\x{1f3f3}\\x{fe0f}\\x{200d}\\x{1f308}\\x{1f3f4}\\x{200d}\\x{2620}\\x{fe0f}\n    A\\x{200d}\\x{1f308}B\n    A\\x{200d}B                     A ZWJ\n    \\x{261D}\\x{1F3FB}B             Extended_Pictographic Extend\n    \\x{1F1E6}\\x{1F1E7}B            RegionalIndicator RegionalIndicator \n    *There are no Prepend characters, so we can't test Prepend, CR\n\n",
       "flags": "",
-      "error": "ValueError: NFA has 1452 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1452 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1694,
-      "engine": "bitnfa",
       "pattern": "\\x{1d172}\\x{1d17b}\n    Number:9\\x{660}\n    Punctuation:\\x{66a},;\n    Symbol:\\x{6de}<>\\x{fffc}\n    Cf-property:\\x{ad}\\x{600}\\x{601}\\x{602}\\x{603}\\x{604}\\x{6dd}\\x{70f}\n    \\x{200b}\\x{200c}\\x{200d}\\x{200e}\\x{200f}\n    \\x{202a}\\x{202b}\\x{202c}\\x{202d}\\x{202e}\n    \\x{2060}\\x{2061}\\x{2062}\\x{2063}\\x{2064}\n    \\x{206a}\\x{206b}\\x{206c}\\x{206d}\\x{206e}\\x{206f}\n    \\x{feff}\n    \\x{fff9}\\x{fffa}\\x{fffb}\n    \\x{110bd}\n    \\x{1d173}\\x{1d174}\\x{1d175}\\x{1d176}\\x{1d177}\\x{1d178}\\x{1d179}\\x{1d17a}\n    \\x{e0001}\n    \\x{e0020}\\x{e0030}\\x{e0040}\\x{e0050}\\x{e0060}\\x{e0070}\\x{e007f}\n\\= Expect no match\n    \\x{09}\n    \\x{0a}\n    \\x{1D}\n    \\x{20}\n    \\x{85}\n    \\x{a0}\n    \\x{1680}\n    \\x{2028}\n    \\x{2029}\n    \\x{202f}\n    \\x{2065}\n    \\x{3000}\n    \\x{e0002}\n    \\x{e001f}\n    \\x{e0080}\n\n",
       "flags": "",
-      "error": "ValueError: NFA has 423 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 423 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1697,
-      "engine": "bitnfa",
       "pattern": "65}\n    \\x{e0002}\\x{e001f}\\x{e0080}\n\\= Expect no match\n    Space: \\x{a0}\n    \\x{1680}\\x{2000}\\x{2001}\\x{2002}\\x{2003}\\x{2004}\\x{2005}\n    \\x{2006}\\x{2007}\\x{2008}\\x{2009}\\x{200a}\n    \\x{202f}\\x{205f}\n    \\x{3000}\n    Letter:ABC\n    Mark:\\x{300}\\x{1d172}\\x{1d17b}\n    Number:9\\x{660}\n    Punctuation:\\x{66a},;\n    Symbol:\\x{6de}<>\\x{fffc}\n    Cf-property:\\x{ad}\\x{600}\\x{601}\\x{602}\\x{603}\\x{604}\\x{6dd}\\x{70f}\n    \\x{200b}\\x{200c}\\x{200d}\\x{200e}\\x{200f}\n    \\x{202a}\\x{202b}\\x{202c}\\x{202d}\\x{202e}\n    \\x{202f}\n    \\x{2060}\\x{2061}\\x{2062}\\x{2063}\\x{2064}\n    \\x{206a}\\x{206b}\\x{206c}\\x{206d}\\x{206e}\\x{206f}\n    \\x{feff}\n    \\x{fff9}\\x{fffa}\\x{fffb}\n    \\x{110bd}\n    \\x{1d173}\\x{1d174}\\x{1d175}\\x{1d176}\\x{1d177}\\x{1d178}\\x{1d179}\\x{1d17a}\n    \\x{e0001}\n    \\x{e0020}\\x{e0030}\\x{e0040}\\x{e0050}\\x{e0060}\\x{e0070}\\x{e007f}\n\n",
       "flags": "",
-      "error": "ValueError: NFA has 444 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 444 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1708,
-      "engine": "bitnfa",
       "pattern": "ul\n    \\x{2e80}\\x{3105}\\x{2e80}\\x{3105}   Han Bopomofo Han Bopomofo\n    \\x{02ea}\\x{2e80}\\x{2e80}\\x{3105}   Bopomofo-Sk Han Han Bopomofo\n    \\x{3105}\\x{2e80}\\x{2e80}\\x{3105}   Bopomofo Han Han Bopomofo\n    \\x{0300}cd!                        Inherited Latin Latin Common\n    \\x{0391}12\\x{03a9}                 Greek Common-digits Greek\n    \\x{0400}12\\x{fe2f}                 Cyrillic Common-digits Cyrillic\n    \\x{0531}12\\x{fb17}                 Armenian Common-digits Armenian\n    \\x{0591}12\\x{fb4f}                 Hebrew Common-digits Hebrew\n    \\x{0600}12\\x{1eef1}                Arabic Common-digits Arabic\n    \\x{0600}\\x{0660}\\x{0669}\\x{1eef1}  Arabic Arabic-digits Arabic\n    \\x{0700}12\\x{086a}                 Syriac Common-digits Syriac\n    \\x{1200}12\\x{ab2e}                 Ethiopic Common-digits Ethiopic\n    \\x{1680}12\\x{169c}                 Ogham Common-digits Ogham\n    \\x{3041}12\\x{3041}                 Hiragana Common-digits Hiragana\n    \\x{0980}\\x{09e6}\\x{09e7}\\x{0993}   Bengali Bengali-digits Bengali\n    !cde                               Common Latin Latin Latin\n    A..B                               Latin Common Common Latin\n    0abc                               Ascii-digit Latin Latin Latin\n    1\\x{0700}\\x{0700}\\x{0700}          Ascii-digit Syriac x 3\n    \\x{1A80}\\x{1A80}\\x{1a40}\\x{1a41}   Tai Tham Hora digits, letters\n\\= Expect no match\n    a\\x{370}bcd                        Latin Greek Latin Latin\n    \\x{1100}\\x{02ea}\\x{02ea}\\x{02ea}   Hangul Bopomofo x3\n    \\x{02ea}\\x{02ea}\\x{02ea}\\x{1100}   Bopomofo x3 Hangul\n    \\x{1100}\\x{2e80}\\x{3041}\\x{1101}   Hangul Han Hiragana Hangul\n    \\x{0391}\\x{09e6}\\x{09e7}\\x{03a9}   Greek Bengali digits Greek\n    \\x{0600}7\\x{0669}\\x{1eef1}         Arabic ascii-digit Arabic-digit Arabic\n    \\x{0600}\\x{0669}7\\x{1eef1}         Arabic Arabic-digit ascii-digit Arabic\n    A5\\x{ff19}B                        Latin Common-ascii",
       "flags": "sii",
-      "error": "ValueError: NFA has 1582 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1582 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1734,
-      "engine": "bitnfa",
       "pattern": "^[\\p{Arabic}]",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1796,
-      "engine": "bitnfa",
       "pattern": "\\x{d800}",
       "flags": "",
-      "error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed"
+      "dfa_error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed",
+      "bitnfa_error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed"
     },
     {
       "case_idx": 1807,
-      "engine": "bitnfa",
       "pattern": "[\\p{L}]",
       "flags": "",
-      "error": "ValueError: NFA has 4938 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4951 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1853,
-      "engine": "bitnfa",
       "pattern": "^X\\p{Lu}+?",
       "flags": "simi",
-      "error": "ValueError: NFA has 1724 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1724 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1854,
-      "engine": "bitnfa",
       "pattern": "^X\\p{Arabic}+?",
       "flags": "simi",
-      "error": "ValueError: NFA has 434 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 434 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1886,
-      "engine": "bitnfa",
       "pattern": "  AB \n    \n# This tests Unicode Pattern White Space characters in verb names when they\n# are being processed with PCRE2_EXTENDED. Note: there are UTF-8 characters\n# with code points greater than 255 between A, B, and C in the pattern.\n\n",
       "flags": "",
-      "error": "ValueError: NFA has 257 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 257 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1888,
-      "engine": "bitnfa",
       "pattern": "  \\x{0980}12\\x{0993}     Bengali Common-digits Bengali\n    \\x{0780}12\\x{07b1}     Thaana Common-digits Thaana\n    \\x{0e01}12\\x{0e5b}     Thai Common-digits Thai\n    \\x{1780}12\\x{19ff}     Khmer Common-digits Khmer\n    \\x{0904}12\\x{0939}     Devanagari Common-digits Devanagari\n    A\\x{ff10}\\x{ff19}B     Latin Common-notascii-digits Latin \n    A\\x{1d7ce}\\x{1d7cf}B   Latin fancy-common-digits Latin\n    \n# These ones involve non-ASCII but nevertheless Common digits. As of October\n# 2018 even blead Perl wasn't handling all of these - but is going to. \n\n",
       "flags": "",
-      "error": "ValueError: NFA has 503 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 503 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1927,
-      "engine": "bitnfa",
       "pattern": "x{660}456\n\n",
       "flags": "",
-      "error": "ValueError: NFA has 666 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 666 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1954,
-      "engine": "bitnfa",
       "pattern": "6e48}\\pN]",
       "flags": "i",
-      "error": "ValueError: NFA has 379 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 379 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1958,
-      "engine": "bitnfa",
       "pattern": "   0\n    C\n\\= Expect no match\n    [\n    a\n\n/[[\\pL][\\p{Nd}]]",
       "flags": "",
-      "error": "ValueError: NFA has 5150 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 5163 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1962,
-      "engine": "bitnfa",
       "pattern": "[[\\p{Lu}\\p{Ll}]~~[\\p{Nd}\\p{Ll}]]",
       "flags": "",
-      "error": "ValueError: NFA has 4179 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4179 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1963,
-      "engine": "bitnfa",
       "pattern": "[\\pL[]]]",
       "flags": "",
-      "error": "ValueError: NFA has 4940 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4953 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1967,
-      "engine": "bitnfa",
       "pattern": "[\\p{Lu}-]",
       "flags": "",
-      "error": "ValueError: NFA has 1244 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1244 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1969,
-      "engine": "bitnfa",
       "pattern": "[  ^  \\p{Ll}[  ^  \\p{Nd}]  ]",
       "flags": "",
-      "error": "ValueError: NFA has 1559 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1559 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 1980,
-      "engine": "bitnfa",
       "pattern": "u}1]&&[\\p{Ll}1]]",
       "flags": "",
-      "error": "ValueError: NFA has 1386 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1386 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2007,
-      "engine": "bitnfa",
       "pattern": "&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]]",
       "flags": "",
-      "error": "ValueError: NFA state limit exceeded (50000)"
+      "dfa_error": "ValueError: NFA state limit exceeded (50000)",
+      "bitnfa_error": "ValueError: NFA state limit exceeded (50000)"
     },
     {
       "case_idx": 2022,
-      "engine": "bitnfa",
       "pattern": "(a.b(?s)c.d|x.y)p.q",
       "flags": "",
-      "error": "error: global flags not at the start of the expression at position 5"
+      "dfa_error": "error: global flags not at the start of the expression at position 5",
+      "bitnfa_error": "error: global flags not at the start of the expression at position 5"
     },
     {
       "case_idx": 2023,
-      "engine": "bitnfa",
       "pattern": "a\\d\\z",
       "flags": "",
-      "error": "error: bad escape \\z at position 3"
+      "dfa_error": "error: bad escape \\z at position 3",
+      "bitnfa_error": "error: bad escape \\z at position 3"
     },
     {
       "case_idx": 2024,
-      "engine": "bitnfa",
       "pattern": "a\\d\\z",
       "flags": "m",
-      "error": "error: bad escape \\z at position 3"
+      "dfa_error": "error: bad escape \\z at position 3",
+      "bitnfa_error": "error: bad escape \\z at position 3"
     },
     {
       "case_idx": 2276,
-      "engine": "bitnfa",
       "pattern": "[\\x{100}-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2277,
-      "engine": "bitnfa",
       "pattern": "[z-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2279,
-      "engine": "bitnfa",
       "pattern": "[Q\\x{100}-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 259 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2280,
-      "engine": "bitnfa",
       "pattern": "[Qz-\\x{200}]",
       "flags": "",
-      "error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 387 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2313,
-      "engine": "bitnfa",
       "pattern": "\\pL\\P{Nd}",
       "flags": "",
-      "error": "ValueError: NFA has 5200 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 5213 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2314,
-      "engine": "bitnfa",
       "pattern": "^\\pL+",
       "flags": "",
-      "error": "ValueError: NFA has 4938 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4951 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2315,
-      "engine": "bitnfa",
       "pattern": "^\\PL+",
       "flags": "",
-      "error": "ValueError: NFA has 268 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 268 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2316,
-      "engine": "bitnfa",
       "pattern": "^\\pL?=.",
       "flags": "",
-      "error": "ValueError: NFA has 4950 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4963 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2317,
-      "engine": "bitnfa",
       "pattern": "^\\pL*=.",
       "flags": "",
-      "error": "ValueError: NFA has 4950 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4963 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2318,
-      "engine": "bitnfa",
       "pattern": "^\\pC\\pL\\pM\\pN\\pP\\pS\\pZ<",
       "flags": "",
-      "error": "ValueError: NFA has 24503 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 24509 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2319,
-      "engine": "bitnfa",
       "pattern": "^\\PC",
       "flags": "",
-      "error": "ValueError: NFA has 392 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 392 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2320,
-      "engine": "bitnfa",
       "pattern": "^\\PL",
       "flags": "",
-      "error": "ValueError: NFA has 268 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 268 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2321,
-      "engine": "bitnfa",
       "pattern": "^\\PM",
       "flags": "",
-      "error": "ValueError: NFA has 396 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 396 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2322,
-      "engine": "bitnfa",
       "pattern": "^\\PN",
       "flags": "",
-      "error": "ValueError: NFA has 390 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 390 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2323,
-      "engine": "bitnfa",
       "pattern": "^\\PP",
       "flags": "",
-      "error": "ValueError: NFA has 397 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 397 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2324,
-      "engine": "bitnfa",
       "pattern": "^\\PS",
       "flags": "",
-      "error": "ValueError: NFA has 422 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 422 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2328,
-      "engine": "bitnfa",
       "pattern": "^\\p{Co}",
       "flags": "",
-      "error": "ValueError: NFA has 2186 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 2186 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2330,
-      "engine": "bitnfa",
       "pattern": "^\\p{Ll}",
       "flags": "",
-      "error": "ValueError: NFA has 1379 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1379 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2332,
-      "engine": "bitnfa",
       "pattern": "^\\p{Lo}",
       "flags": "",
-      "error": "ValueError: NFA has 3550 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 3563 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2334,
-      "engine": "bitnfa",
       "pattern": "^\\p{Lu}",
       "flags": "",
-      "error": "ValueError: NFA has 1244 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1244 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2335,
-      "engine": "bitnfa",
       "pattern": "^\\p{Mc}",
       "flags": "",
-      "error": "ValueError: NFA has 447 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 447 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2337,
-      "engine": "bitnfa",
       "pattern": "^\\p{Mn}",
       "flags": "",
-      "error": "ValueError: NFA has 1074 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1074 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2346,
-      "engine": "bitnfa",
       "pattern": "^\\p{Po}",
       "flags": "",
-      "error": "ValueError: NFA has 428 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 428 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2351,
-      "engine": "bitnfa",
       "pattern": "^\\p{So}",
       "flags": "",
-      "error": "ValueError: NFA has 513 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 515 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2357,
-      "engine": "bitnfa",
       "pattern": "\\p{Nd}{2,}(..)",
       "flags": "",
-      "error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2358,
-      "engine": "bitnfa",
       "pattern": "\\p{Nd}{2,}?(..)",
       "flags": "",
-      "error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2361,
-      "engine": "bitnfa",
       "pattern": "\\p{Nd}{2}(..)",
       "flags": "",
-      "error": "ValueError: NFA has 379 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 379 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2362,
-      "engine": "bitnfa",
       "pattern": "\\p{Nd}{2,3}(..)",
       "flags": "",
-      "error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2363,
-      "engine": "bitnfa",
       "pattern": "\\p{Nd}{2,3}?(..)",
       "flags": "",
-      "error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 557 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2366,
-      "engine": "bitnfa",
       "pattern": "\\p{^Lu}",
       "flags": "i",
-      "error": "error: unknown Unicode property name: '^Lu' at position 0"
+      "dfa_error": "error: unknown Unicode property name: '^Lu' at position 0",
+      "bitnfa_error": "error: unknown Unicode property name: '^Lu' at position 0"
     },
     {
       "case_idx": 2367,
-      "engine": "bitnfa",
       "pattern": "\\P{Lu}",
       "flags": "i",
-      "error": "ValueError: NFA has 308 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 308 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2370,
-      "engine": "bitnfa",
       "pattern": "[\\P{Nd}]+",
       "flags": "",
-      "error": "ValueError: NFA has 263 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 263 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2372,
-      "engine": "bitnfa",
       "pattern": "\\P{Nd}+",
       "flags": "",
-      "error": "ValueError: NFA has 263 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 263 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2374,
-      "engine": "bitnfa",
       "pattern": "[\\P{Nd}]+",
       "flags": "",
-      "error": "ValueError: NFA has 263 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 263 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2375,
-      "engine": "bitnfa",
       "pattern": "[\\D\\P{Nd}]+",
       "flags": "",
-      "error": "ValueError: NFA has 273 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 273 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2376,
-      "engine": "bitnfa",
       "pattern": "\\pL",
       "flags": "",
-      "error": "ValueError: NFA has 4938 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4951 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2377,
-      "engine": "bitnfa",
       "pattern": "\\pL",
       "flags": "i",
-      "error": "ValueError: NFA has 5954 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 5967 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2389,
-      "engine": "bitnfa",
       "pattern": "^\\pN{2,3}X",
       "flags": "",
-      "error": "ValueError: NFA has 1118 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1118 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2391,
-      "engine": "bitnfa",
       "pattern": "^\\p{Han}+",
       "flags": "",
-      "error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1607 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2393,
-      "engine": "bitnfa",
       "pattern": "^[\\p{Arabic}]",
       "flags": "",
-      "error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 433 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2395,
-      "engine": "bitnfa",
       "pattern": "^\\p{Any}X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2397,
-      "engine": "bitnfa",
       "pattern": "^\\p{Any}?X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2399,
-      "engine": "bitnfa",
       "pattern": "^\\p{Any}+X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2401,
-      "engine": "bitnfa",
       "pattern": "^\\p{Any}*X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2403,
-      "engine": "bitnfa",
       "pattern": "^[\\p{Any}]X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2405,
-      "engine": "bitnfa",
       "pattern": "^[\\p{Any}]?X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2407,
-      "engine": "bitnfa",
       "pattern": "^[\\p{Any}]+X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2409,
-      "engine": "bitnfa",
       "pattern": "^[\\p{Any}]*X",
       "flags": "",
-      "error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
+      "dfa_error": "ValueError: DFA state limit exceeded (10000)",
+      "bitnfa_error": "ValueError: NFA has 19544 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2411,
-      "engine": "bitnfa",
       "pattern": "^\\p{Any}{3,5}?",
       "flags": "",
-      "error": "ValueError: NFA state limit exceeded (50000)"
+      "dfa_error": "ValueError: NFA state limit exceeded (50000)",
+      "bitnfa_error": "ValueError: NFA state limit exceeded (50000)"
     },
     {
       "case_idx": 2412,
-      "engine": "bitnfa",
       "pattern": "^\\p{Any}{3,5}",
       "flags": "",
-      "error": "ValueError: NFA state limit exceeded (50000)"
+      "dfa_error": "ValueError: NFA state limit exceeded (50000)",
+      "bitnfa_error": "ValueError: NFA state limit exceeded (50000)"
     },
     {
       "case_idx": 2418,
-      "engine": "bitnfa",
       "pattern": "\\p{L}{4}",
       "flags": "",
-      "error": "ValueError: NFA has 19749 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 19801 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2572,
-      "engine": "bitnfa",
       "pattern": "\\p{Lu}\\p{Ll}\\P{Lu}\\P{Ll}",
       "flags": "",
-      "error": "ValueError: NFA has 3238 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 3238 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2573,
-      "engine": "bitnfa",
       "pattern": "\\p{Lu}\\p{Ll}\\P{Lu}\\P{Ll}",
       "flags": "i",
-      "error": "ValueError: NFA has 4246 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4246 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2574,
-      "engine": "bitnfa",
       "pattern": "[.\\p{Lu}][.\\p{Ll}][.\\P{Lu}][.\\P{Ll}]",
       "flags": "i",
-      "error": "ValueError: NFA has 4246 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 4246 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2575,
-      "engine": "bitnfa",
       "pattern": "[\\p{Ll}[\\p{Nd}]]C",
       "flags": "xss",
-      "error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2576,
-      "engine": "bitnfa",
       "pattern": "[[\\p{Ll}][\\p{Nd}]]",
       "flags": "xss",
-      "error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2577,
-      "engine": "bitnfa",
       "pattern": "[[\\p{Ll}]||[\\p{Nd}]]",
       "flags": "xss",
-      "error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2578,
-      "engine": "bitnfa",
       "pattern": "[[^\\p{Ll}][\\p{Nd}]]",
       "flags": "xss",
-      "error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1558 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2579,
-      "engine": "bitnfa",
       "pattern": "[^[\\p{Ll}][\\p{Nd}]]",
       "flags": "xss",
-      "error": "ValueError: NFA has 489 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 489 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2580,
-      "engine": "bitnfa",
       "pattern": "[^[\\p{Ll}]&&[\\p{Nd}]]",
       "flags": "xss",
-      "error": "ValueError: NFA has 491 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 491 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2581,
-      "engine": "bitnfa",
       "pattern": "^((a+)(?U)([ab]+)(?-U)([bc]+)(\\w*))",
       "flags": "",
-      "error": "error: unknown extension ?U at position 7"
+      "dfa_error": "error: unknown extension ?U at position 7",
+      "bitnfa_error": "error: unknown extension ?U at position 7"
     },
     {
       "case_idx": 2583,
-      "engine": "bitnfa",
       "pattern": "(?i:A{1,}\\6666666666)",
       "flags": "",
-      "error": "error: octal escape value \\666 outside of range 0-0o377 at position 9"
+      "dfa_error": "error: octal escape value \\666 outside of range 0-0o377 at position 9",
+      "bitnfa_error": "error: octal escape value \\666 outside of range 0-0o377 at position 9"
     },
     {
       "case_idx": 2589,
-      "engine": "bitnfa",
       "pattern": "\\[(a)]{1000}",
       "flags": "x",
-      "error": "ValueError: NFA has 1003 positions (limit: 256); use the DFA engine for this pattern"
+      "bitnfa_error": "ValueError: NFA has 1003 positions (limit: 256); use the DFA engine for this pattern"
     },
     {
       "case_idx": 2590,
-      "engine": "bitnfa",
       "pattern": "\\[(a)]{1000}",
       "flags": "x",
-      "error": "ValueError: NFA has 1003 positions (limit: 256); use the DFA engine for this pattern"
-    },
-    {
-      "case_idx": 180,
-      "engine": "dfa",
-      "pattern": "\\777",
-      "flags": "",
-      "error": "error: octal escape value \\777 outside of range 0-0o377 at position 0"
-    },
-    {
-      "case_idx": 202,
-      "engine": "dfa",
-      "pattern": "[\\W\\p{Any}]",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 227,
-      "engine": "dfa",
-      "pattern": "A\\z",
-      "flags": "",
-      "error": "error: bad escape \\z at position 1"
-    },
-    {
-      "case_idx": 229,
-      "engine": "dfa",
-      "pattern": "ab\\z",
-      "flags": "mii",
-      "error": "error: bad escape \\z at position 2"
-    },
-    {
-      "case_idx": 241,
-      "engine": "dfa",
-      "pattern": "[\\v\\x{dc00}]+",
-      "flags": "",
-      "error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\udc00' in position 0: surrogates not allowed"
-    },
-    {
-      "case_idx": 250,
-      "engine": "dfa",
-      "pattern": "a\\x{d800}b",
-      "flags": "",
-      "error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed"
-    },
-    {
-      "case_idx": 255,
-      "engine": "dfa",
-      "pattern": "(?i:A{1,}\\6666666666)",
-      "flags": "",
-      "error": "error: octal escape value \\666 outside of range 0-0o377 at position 9"
-    },
-    {
-      "case_idx": 265,
-      "engine": "dfa",
-      "pattern": "\\777",
-      "flags": "",
-      "error": "error: octal escape value \\777 outside of range 0-0o377 at position 0"
-    },
-    {
-      "case_idx": 287,
-      "engine": "dfa",
-      "pattern": "[\\W\\p{Any}]",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 419,
-      "engine": "dfa",
-      "pattern": "(?U)<.*>",
-      "flags": "",
-      "error": "error: unknown extension ?U at position 1"
-    },
-    {
-      "case_idx": 422,
-      "engine": "dfa",
-      "pattern": "(?U)={3,}?",
-      "flags": "",
-      "error": "error: unknown extension ?U at position 1"
-    },
-    {
-      "case_idx": 425,
-      "engine": "dfa",
-      "pattern": "^((a+)(?U)([ab]+)(?-U)([bc]+)(\\w*))",
-      "flags": "",
-      "error": "error: unknown extension ?U at position 7"
-    },
-    {
-      "case_idx": 441,
-      "engine": "dfa",
-      "pattern": "((?-i)[[:lower:]])[[:lower:]]",
-      "flags": "i",
-      "error": "error: global flags not at the start of the expression at position 2"
-    },
-    {
-      "case_idx": 442,
-      "engine": "dfa",
-      "pattern": "(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\d+(?:\\s|$))(\\w+)\\s+(\\270)",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 458,
-      "engine": "dfa",
-      "pattern": "a(?i)b",
-      "flags": "",
-      "error": "error: global flags not at the start of the expression at position 2"
-    },
-    {
-      "case_idx": 459,
-      "engine": "dfa",
-      "pattern": "(a(?i)b)",
-      "flags": "",
-      "error": "error: global flags not at the start of the expression at position 3"
-    },
-    {
-      "case_idx": 460,
-      "engine": "dfa",
-      "pattern": "\\Q\\E",
-      "flags": "",
-      "error": "error: bad escape \\Q at position 0"
-    },
-    {
-      "case_idx": 461,
-      "engine": "dfa",
-      "pattern": "a\\Q\\E",
-      "flags": "",
-      "error": "error: bad escape \\Q at position 1"
-    },
-    {
-      "case_idx": 462,
-      "engine": "dfa",
-      "pattern": "a\\Q\\Eb",
-      "flags": "",
-      "error": "error: bad escape \\Q at position 1"
-    },
-    {
-      "case_idx": 491,
-      "engine": "dfa",
-      "pattern": "(?i)(?-i)AbCd",
-      "flags": "",
-      "error": "error: global flags not at the start of the expression at position 5"
-    },
-    {
-      "case_idx": 492,
-      "engine": "dfa",
-      "pattern": "(){2,4294967295}",
-      "flags": "",
-      "error": "OverflowError: the repetition number is too large"
-    },
-    {
-      "case_idx": 577,
-      "engine": "dfa",
-      "pattern": "(?i)a(?-i)b|c",
-      "flags": "",
-      "error": "error: global flags not at the start of the expression at position 6"
-    },
-    {
-      "case_idx": 580,
-      "engine": "dfa",
-      "pattern": "abc\\z",
-      "flags": "",
-      "error": "error: bad escape \\z at position 3"
-    },
-    {
-      "case_idx": 618,
-      "engine": "dfa",
-      "pattern": "a(?<ONE>b)c(?<TWO>d)e",
-      "flags": "",
-      "error": "error: unknown extension ?< at position 2"
-    },
-    {
-      "case_idx": 619,
-      "engine": "dfa",
-      "pattern": "a(?<ONE>b)c(?<TWO>d)e",
-      "flags": "",
-      "error": "error: unknown extension ?< at position 2"
-    },
-    {
-      "case_idx": 632,
-      "engine": "dfa",
-      "pattern": "(?<A>.)(?<B>.)",
-      "flags": "",
-      "error": "error: unknown extension ?< at position 1"
-    },
-    {
-      "case_idx": 639,
-      "engine": "dfa",
-      "pattern": "a(?<named>b)c",
-      "flags": "ssix",
-      "error": "error: unknown extension ?< at position 2"
-    },
-    {
-      "case_idx": 644,
-      "engine": "dfa",
-      "pattern": "(?<A>a)|(?<A>b)",
-      "flags": "ms",
-      "error": "error: unknown extension ?< at position 1"
-    },
-    {
-      "case_idx": 690,
-      "engine": "dfa",
-      "pattern": "a(?<namED_1>b)c",
-      "flags": "ssix",
-      "error": "error: unknown extension ?< at position 2"
-    },
-    {
-      "case_idx": 691,
-      "engine": "dfa",
-      "pattern": "a(?<namedverylongbutperfectlylegalsoyoushouldnthaveaproblem_1>b)c",
-      "flags": "ssix",
-      "error": "error: unknown extension ?< at position 2"
-    },
-    {
-      "case_idx": 701,
-      "engine": "dfa",
-      "pattern": "()\\Q\\E*]",
-      "flags": "",
-      "error": "error: bad escape \\Q at position 2"
-    },
-    {
-      "case_idx": 722,
-      "engine": "dfa",
-      "pattern": "ab\\Cde",
-      "flags": "i",
-      "error": "error: bad escape \\C at position 2"
-    },
-    {
-      "case_idx": 723,
-      "engine": "dfa",
-      "pattern": "ab\\Cde",
-      "flags": "",
-      "error": "error: bad escape \\C at position 2"
-    },
-    {
-      "case_idx": 728,
-      "engine": "dfa",
-      "pattern": "\\C{3,5}",
-      "flags": "",
-      "error": "error: bad escape \\C at position 0"
-    },
-    {
-      "case_idx": 733,
-      "engine": "dfa",
-      "pattern": "ch - tests \\C at end of subject\n    ab\n\n",
-      "flags": "",
-      "error": "error: bad escape \\C at position 11 (line 1, column 12)"
-    },
-    {
-      "case_idx": 1796,
-      "engine": "dfa",
-      "pattern": "\\x{d800}",
-      "flags": "",
-      "error": "UnicodeEncodeError: 'utf-8' codec can't encode character '\\ud800' in position 0: surrogates not allowed"
-    },
-    {
-      "case_idx": 2007,
-      "engine": "dfa",
-      "pattern": "&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]\n&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]&&[\\pN--[\\pC||\\x{9F5}]]]",
-      "flags": "",
-      "error": "ValueError: NFA state limit exceeded (50000)"
-    },
-    {
-      "case_idx": 2022,
-      "engine": "dfa",
-      "pattern": "(a.b(?s)c.d|x.y)p.q",
-      "flags": "",
-      "error": "error: global flags not at the start of the expression at position 5"
-    },
-    {
-      "case_idx": 2023,
-      "engine": "dfa",
-      "pattern": "a\\d\\z",
-      "flags": "",
-      "error": "error: bad escape \\z at position 3"
-    },
-    {
-      "case_idx": 2024,
-      "engine": "dfa",
-      "pattern": "a\\d\\z",
-      "flags": "m",
-      "error": "error: bad escape \\z at position 3"
-    },
-    {
-      "case_idx": 2318,
-      "engine": "dfa",
-      "pattern": "^\\pC\\pL\\pM\\pN\\pP\\pS\\pZ<",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2366,
-      "engine": "dfa",
-      "pattern": "\\p{^Lu}",
-      "flags": "i",
-      "error": "error: unknown Unicode property name: '^Lu' at position 0"
-    },
-    {
-      "case_idx": 2395,
-      "engine": "dfa",
-      "pattern": "^\\p{Any}X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2397,
-      "engine": "dfa",
-      "pattern": "^\\p{Any}?X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2399,
-      "engine": "dfa",
-      "pattern": "^\\p{Any}+X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2401,
-      "engine": "dfa",
-      "pattern": "^\\p{Any}*X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2403,
-      "engine": "dfa",
-      "pattern": "^[\\p{Any}]X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2405,
-      "engine": "dfa",
-      "pattern": "^[\\p{Any}]?X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2407,
-      "engine": "dfa",
-      "pattern": "^[\\p{Any}]+X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2409,
-      "engine": "dfa",
-      "pattern": "^[\\p{Any}]*X",
-      "flags": "",
-      "error": "ValueError: DFA state limit exceeded (10000)"
-    },
-    {
-      "case_idx": 2411,
-      "engine": "dfa",
-      "pattern": "^\\p{Any}{3,5}?",
-      "flags": "",
-      "error": "ValueError: NFA state limit exceeded (50000)"
-    },
-    {
-      "case_idx": 2412,
-      "engine": "dfa",
-      "pattern": "^\\p{Any}{3,5}",
-      "flags": "",
-      "error": "ValueError: NFA state limit exceeded (50000)"
-    },
-    {
-      "case_idx": 2581,
-      "engine": "dfa",
-      "pattern": "^((a+)(?U)([ab]+)(?-U)([bc]+)(\\w*))",
-      "flags": "",
-      "error": "error: unknown extension ?U at position 7"
-    },
-    {
-      "case_idx": 2583,
-      "engine": "dfa",
-      "pattern": "(?i:A{1,}\\6666666666)",
-      "flags": "",
-      "error": "error: octal escape value \\666 outside of range 0-0o377 at position 9"
+      "bitnfa_error": "ValueError: NFA has 1003 positions (limit: 256); use the DFA engine for this pattern"
     }
   ]
 }
