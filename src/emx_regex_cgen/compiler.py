@@ -20,6 +20,7 @@ from .parser import (
     AT_END_STRING,
     AT_NON_BOUNDARY,
     BRANCH,
+    BYTE,
     CATEGORY,
     CATEGORY_DIGIT,
     CATEGORY_NOT_DIGIT,
@@ -27,6 +28,7 @@ from .parser import (
     CATEGORY_NOT_WORD,
     CATEGORY_SPACE,
     CATEGORY_WORD,
+    FLAGS,
     IN,
     LITERAL,
     MAX_REPEAT,
@@ -64,6 +66,11 @@ _WORD = (
     | frozenset({95})
 )
 _SPACE = frozenset({9, 10, 12, 13, 32})
+
+
+def _is_surrogate(code: int) -> bool:
+    """Return True when *code* is a UTF-16 surrogate code point."""
+    return 0xD800 <= code <= 0xDFFF
 
 
 def _build_casefold_table() -> dict[str, frozenset[int]]:
@@ -182,6 +189,8 @@ class NFABuilder:
         if self.bytes_mode:
             if code <= 255:
                 self._tr(src, code, dst)
+            return
+        if _is_surrogate(code):
             return
         if code <= 127:
             self._tr(src, code, dst)
@@ -533,16 +542,42 @@ class NFABuilder:
     def build(self, parsed) -> tuple[int, int]:
         return self._seq(list(parsed))
 
+    def _epsilon_fragment(self) -> tuple[int, int]:
+        s0, s1 = self._new(), self._new()
+        self._eps(s0, s1)
+        return s0, s1
+
+    def _push_runtime_flags(self, add_flags: int, del_flags: int) -> tuple[bool, bool]:
+        old = (self.case_insensitive, self.dot_all)
+        if add_flags & re.IGNORECASE:
+            self.case_insensitive = True
+        if del_flags & re.IGNORECASE:
+            self.case_insensitive = False
+        if add_flags & re.DOTALL:
+            self.dot_all = True
+        if del_flags & re.DOTALL:
+            self.dot_all = False
+        return old
+
+    def _pop_runtime_flags(self, saved: tuple[bool, bool]) -> None:
+        self.case_insensitive, self.dot_all = saved
+
     def _seq(self, items: list) -> tuple[int, int]:
-        if not items:
-            s0, s1 = self._new(), self._new()
-            self._eps(s0, s1)
-            return s0, s1
-        frag = self._elem(items[0])
-        for item in items[1:]:
+        frag: tuple[int, int] | None = None
+        for item in items:
+            op, val = item
+            if op == FLAGS:
+                add_flags, del_flags = val
+                self._push_runtime_flags(add_flags, del_flags)
+                continue
             nxt = self._elem(item)
-            self._eps(frag[1], nxt[0])
-            frag = (frag[0], nxt[1])
+            if frag is None:
+                frag = nxt
+            else:
+                self._eps(frag[1], nxt[0])
+                frag = (frag[0], nxt[1])
+        if frag is None:
+            return self._epsilon_fragment()
         return frag
 
     def _elem(self, item) -> tuple[int, int]:
@@ -553,6 +588,8 @@ class NFABuilder:
             return self._not_literal(val)
         if op == ANY:
             return self._any()
+        if op == BYTE:
+            return self._byte()
         if op == IN:
             return self._in(val)
         if op == BRANCH:
@@ -580,6 +617,8 @@ class NFABuilder:
 
     def _literal(self, code: int) -> tuple[int, int]:
         s0, s1 = self._new(), self._new()
+        if not self.bytes_mode and _is_surrogate(code):
+            return s0, s1
         self._add_char(s0, code, s1)
         return s0, s1
 
@@ -631,6 +670,12 @@ class NFABuilder:
                 self._tr(s0, b, s1)
         # Multi-byte UTF-8 sequences (all valid non-ASCII code points)
         self._add_utf8_paths(s0, s1)
+        return s0, s1
+
+    def _byte(self) -> tuple[int, int]:
+        s0, s1 = self._new(), self._new()
+        for b in range(256):
+            self._tr(s0, b, s1)
         return s0, s1
 
     def _in(self, items: list) -> tuple[int, int]:
@@ -691,15 +736,22 @@ class NFABuilder:
     def _branch(self, val) -> tuple[int, int]:
         _, branches = val
         s0, s1 = self._new(), self._new()
+        saved = (self.case_insensitive, self.dot_all)
         for branch in branches:
+            self.case_insensitive, self.dot_all = saved
             frag = self._seq(branch)
             self._eps(s0, frag[0])
             self._eps(frag[1], s1)
+        self.case_insensitive, self.dot_all = saved
         return s0, s1
 
     def _subpat(self, val) -> tuple[int, int]:
-        _gid, _add, _del, pattern = val
-        return self._seq(pattern)
+        _gid, add_flags, del_flags, pattern = val
+        saved = self._push_runtime_flags(add_flags, del_flags)
+        try:
+            return self._seq(pattern)
+        finally:
+            self._pop_runtime_flags(saved)
 
     def _repeat(self, val) -> tuple[int, int]:
         lo, hi, pattern = val
@@ -1131,7 +1183,6 @@ def _renumber(dfa: dict) -> dict:
 def _preprocess_pattern(pattern: str) -> str:
     r"""Pre-process PCRE2 / re2 pattern extensions.
 
-    * ``\x{NNNN}`` hex escapes → literal characters.
     * POSIX character classes ``[:alpha:]`` etc. → equivalent ranges.
     """
     # POSIX class mapping (inside [...])
@@ -1170,25 +1221,7 @@ def _preprocess_pattern(pattern: str) -> str:
     for posix, replacement in _POSIX.items():
         pattern = pattern.replace(posix, replacement)
 
-    # Replace \x{NNNN} hex escapes
-    result: list[str] = []
-    i = 0
-    while i < len(pattern):
-        if pattern[i : i + 3] == "\\x{":
-            end = pattern.find("}", i + 3)
-            if end != -1:
-                hex_str = pattern[i + 3 : end]
-                try:
-                    code = int(hex_str, 16)
-                    if code <= 0x10FFFF:
-                        result.append(chr(code))
-                        i = end + 1
-                        continue
-                except ValueError:
-                    pass
-        result.append(pattern[i])
-        i += 1
-    return "".join(result)
+    return pattern
 
 
 # ---------------------------------------------------------------------------
