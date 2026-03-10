@@ -1,71 +1,45 @@
 """Compile regex patterns to minimised DFA.
 
-Pipeline: regex string → sre_parse AST → Thompson NFA → subset-construction
-DFA → Hopcroft minimisation → renumbered DFA with explicit dead state.
+Pipeline: regex string → custom parser AST → Thompson NFA →
+subset-construction DFA → Hopcroft minimisation → renumbered DFA with
+explicit dead state.
 """
 
 from __future__ import annotations
 
 import re
-import sre_parse
 from collections import deque
 
-try:
-    from sre_constants import (
-        ANY,
-        AT,
-        AT_BEGINNING,
-        AT_BEGINNING_STRING,
-        AT_BOUNDARY,
-        AT_END,
-        AT_END_STRING,
-        AT_NON_BOUNDARY,
-        BRANCH,
-        CATEGORY,
-        CATEGORY_DIGIT,
-        CATEGORY_NOT_DIGIT,
-        CATEGORY_NOT_SPACE,
-        CATEGORY_NOT_WORD,
-        CATEGORY_SPACE,
-        CATEGORY_WORD,
-        IN,
-        LITERAL,
-        MAX_REPEAT,
-        MIN_REPEAT,
-        NEGATE,
-        NOT_LITERAL,
-        RANGE,
-        SUBPATTERN,
-    )
-except ImportError:
-    from re._constants import (  # Python ≥ 3.13
-        ANY,
-        AT,
-        AT_BEGINNING,
-        AT_BEGINNING_STRING,
-        AT_BOUNDARY,
-        AT_END,
-        AT_END_STRING,
-        AT_NON_BOUNDARY,
-        BRANCH,
-        CATEGORY,
-        CATEGORY_DIGIT,
-        CATEGORY_NOT_DIGIT,
-        CATEGORY_NOT_SPACE,
-        CATEGORY_NOT_WORD,
-        CATEGORY_SPACE,
-        CATEGORY_WORD,
-        IN,
-        LITERAL,
-        MAX_REPEAT,
-        MIN_REPEAT,
-        NEGATE,
-        NOT_LITERAL,
-        RANGE,
-        SUBPATTERN,
-    )
-
-MAXREPEAT = sre_parse.MAXREPEAT
+from .parser import (
+    ANY,
+    AT,
+    AT_BEGINNING,
+    AT_BEGINNING_STRING,
+    AT_BOUNDARY,
+    AT_END,
+    AT_END_STRING,
+    AT_NON_BOUNDARY,
+    BRANCH,
+    CATEGORY,
+    CATEGORY_DIGIT,
+    CATEGORY_NOT_DIGIT,
+    CATEGORY_NOT_SPACE,
+    CATEGORY_NOT_WORD,
+    CATEGORY_SPACE,
+    CATEGORY_WORD,
+    IN,
+    LITERAL,
+    MAX_REPEAT,
+    MAXREPEAT,
+    MIN_REPEAT,
+    NEGATE,
+    NOT_LITERAL,
+    RANGE,
+    SUBPATTERN,
+)
+from .parser import (
+    parse as _parse_regex,
+)
 
 # Limit to prevent runaway DFA construction
 _MAX_DFA_STATES = 10_000
@@ -132,7 +106,7 @@ def _category_bytes(cat: int) -> frozenset[int]:
 # ---------------------------------------------------------------------------
 
 class NFABuilder:
-    """Build a Thompson NFA from an ``sre_parse`` AST."""
+    """Build a Thompson NFA from a parser AST."""
 
     def __init__(
         self,
@@ -1096,7 +1070,7 @@ def _renumber(dfa: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 def _preprocess_pattern(pattern: str) -> str:
-    r"""Pre-process PCRE2 / re2 pattern extensions for ``sre_parse``.
+    r"""Pre-process PCRE2 / re2 pattern extensions.
 
     * ``\x{NNNN}`` hex escapes → literal characters.
     * POSIX character classes ``[:alpha:]`` etc. → equivalent ranges.
@@ -1185,7 +1159,7 @@ def _build_nfa(
         # directive that we ignore.
 
     pattern = _preprocess_pattern(pattern)
-    parsed = sre_parse.parse(pattern, re_flags)
+    parsed = _parse_regex(pattern, re_flags)
 
     builder = NFABuilder(case_insensitive=ci, dot_all=da, bytes_mode=(encoding == "bytes"))
     start, accept = builder.build(parsed)
