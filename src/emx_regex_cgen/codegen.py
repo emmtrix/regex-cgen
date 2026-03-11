@@ -5,6 +5,10 @@ from __future__ import annotations
 from .compiler import compile_nfa, compile_regex
 from .result import GeneratedCode
 
+# Sentinel prefix that compile_regex() uses when the DFA state limit is hit.
+# Must stay in sync with the error message in compiler.py.
+_DFA_LIMIT_MSG = "DFA state limit exceeded"
+
 
 def _should_apply(mode: str, table_size: int, threshold: int) -> bool:
     """Resolve an ``"auto"``/``"yes"``/``"no"`` mode flag."""
@@ -231,13 +235,18 @@ def generate(
     emit_main: bool = False,
     prefix: str = "regex",
     encoding: str = "utf8",
-    engine: str = "dfa",
+    engine: str = "auto",
     row_dedup: str = "auto",
     alphabet_compression: str = "auto",
     size_threshold: int = 8192,
     early_exit: bool = False,
 ) -> GeneratedCode:
-    """High-level API: compile *pattern* and return generated C code."""
+    """High-level API: compile *pattern* and return generated C code.
+
+    When *engine* is ``"auto"`` (the default) the DFA backend is tried first.
+    If DFA compilation fails because the state limit is exceeded, the
+    bit-parallel NFA backend is used as a fallback.
+    """
     if engine == "bitnfa":
         from .codegen_bitnfa import generate_bitnfa_c_code
 
@@ -251,7 +260,24 @@ def generate(
             encoding=encoding,
         )
 
-    dfa = compile_regex(pattern, flags, encoding=encoding)
+    # engine == "dfa" or engine == "auto"
+    try:
+        dfa = compile_regex(pattern, flags, encoding=encoding)
+    except ValueError as exc:
+        if engine != "auto" or _DFA_LIMIT_MSG not in str(exc):
+            raise
+        # auto fallback: DFA state limit exceeded → try bitnfa
+        from .codegen_bitnfa import generate_bitnfa_c_code
+
+        nfa = compile_nfa(pattern, flags, encoding=encoding)
+        return generate_bitnfa_c_code(
+            nfa,
+            prefix=prefix,
+            emit_main=emit_main,
+            pattern=pattern,
+            flags=flags,
+            encoding=encoding,
+        )
     return generate_c_code(
         dfa,
         prefix=prefix,
