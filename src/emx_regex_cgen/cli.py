@@ -79,10 +79,11 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--engine",
-        choices=["dfa", "bitnfa"],
-        default="dfa",
+        choices=["auto", "dfa", "bitnfa"],
+        default="auto",
         help=(
-            "Backend engine: dfa (table-driven minimised DFA; default), "
+            "Backend engine: auto (try DFA first, fall back to bitnfa; default), "
+            "dfa (table-driven minimised DFA), "
             "bitnfa (bit-parallel NFA)"
         ),
     )

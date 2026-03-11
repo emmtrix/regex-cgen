@@ -7,8 +7,10 @@ static C code for embedded and performance-critical applications.
 ## Key Characteristics
 
 - **Two backend engines** — choose between a table-driven **DFA** and a
-  bit-parallel **NFA** (`--engine dfa` or `--engine bitnfa`).
-- **Table-driven DFA** (default) — every regex is compiled to a minimised
+  bit-parallel **NFA** (`--engine dfa`, `--engine bitnfa`, or the default
+  `--engine auto` which tries DFA first and falls back to bitnfa when the
+  DFA state limit is exceeded).
+- **Table-driven DFA** — every regex is compiled to a minimised
   deterministic finite automaton; the generated C code performs a single
   linear scan over the input.
 - **Bit-parallel NFA** — the regex is compiled to a Thompson NFA and
@@ -82,7 +84,7 @@ generate(
     emit_main=False,
     prefix="regex",
     encoding="utf8",
-    engine="dfa",
+    engine="auto",
     row_dedup="auto",
     alphabet_compression="auto",
     size_threshold=8192,
@@ -99,7 +101,7 @@ Library arguments map directly to the generator settings:
 | `emit_main` | `bool` | `False` | Include a standalone `main()` function in the generated C code. |
 | `prefix` | `str` | `"regex"` | Prefix for generated C identifiers such as `regex_match`. |
 | `encoding` | `str` | `"utf8"` | `"utf8"` for Unicode-aware UTF-8 input, or `"bytes"` for raw byte semantics. |
-| `engine` | `str` | `"dfa"` | Backend engine: `"dfa"` or `"bitnfa"`. |
+| `engine` | `str` | `"auto"` | Backend engine: `"auto"` (DFA first, bitnfa fallback), `"dfa"`, or `"bitnfa"`. |
 | `row_dedup` | `str` | `"auto"` | DFA only: `"yes"`, `"no"`, or `"auto"` for transition-row deduplication. |
 | `alphabet_compression` | `str` | `"auto"` | DFA only: `"yes"`, `"no"`, or `"auto"` for byte equivalence-class compression. |
 | `size_threshold` | `int` | `8192` | DFA only: threshold used by `"auto"` for `row_dedup` and `alphabet_compression`. |
@@ -152,7 +154,7 @@ emx-regex-cgen --engine bitnfa 'hello' --emit-main -o bitnfa_matcher.c
 ```
 usage: emx-regex-cgen [-h] [-o OUTPUT] [--emit-main] [--prefix PREFIX]
                   [--flags FLAGS] [--encoding {utf8,bytes}]
-                  [--engine {dfa,bitnfa}]
+                  [--engine {auto,dfa,bitnfa}]
                   [--row-dedup {yes,no,auto}]
                   [--alphabet-compression {yes,no,auto}]
                   [--size-threshold SIZE_THRESHOLD]
@@ -171,8 +173,9 @@ options:
   --encoding {utf8,bytes}
                         Input encoding: utf8 (default, Unicode-aware) or bytes
                         (raw byte semantics)
-  --engine {dfa,bitnfa}
-                        Backend engine: dfa (table-driven minimised DFA; default),
+  --engine {auto,dfa,bitnfa}
+                        Backend engine: auto (try DFA first, fall back to bitnfa; default),
+                        dfa (table-driven minimised DFA),
                         bitnfa (bit-parallel NFA)
   --row-dedup {yes,no,auto}
                         Transition-row deduplication: yes (always), no (never),

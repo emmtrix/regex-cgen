@@ -9,6 +9,8 @@ Verifies that:
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
 
 from emx_regex_cgen import GeneratedCode, generate
@@ -296,3 +298,60 @@ def test_generate_bitnfa_c_code_returns_generated_code() -> None:
     nfa = compile_nfa("hello")
     result = generate_bitnfa_c_code(nfa)
     assert isinstance(result, GeneratedCode)
+
+
+# ---------------------------------------------------------------------------
+# engine="auto" tests
+# ---------------------------------------------------------------------------
+
+
+def test_engine_auto_is_default() -> None:
+    """engine='auto' must be the default and produce the same output as engine='dfa'
+    for patterns that do not exceed the DFA state limit."""
+    result_auto = generate("hello")
+    result_dfa = generate("hello", engine="dfa")
+    assert result_auto.render() == result_dfa.render()
+
+
+def test_engine_auto_uses_dfa_for_simple_pattern() -> None:
+    """engine='auto' must use the DFA backend for a simple pattern (no state limit)."""
+    result = generate("hello", engine="auto")
+    # DFA metadata comment includes 'alphabet-compression' and 'row-deduplication'
+    # which are DFA-specific options; bitnfa uses 'engine:   bitnfa' instead.
+    assert "alphabet-compression:" in result.match_function
+    assert "engine:   bitnfa" not in result.match_function
+
+
+def test_engine_auto_falls_back_to_bitnfa_on_dfa_limit() -> None:
+    """engine='auto' must fall back to bitnfa when DFA compilation raises
+    'DFA state limit exceeded'."""
+    with patch(
+        "emx_regex_cgen.codegen.compile_regex",
+        side_effect=ValueError("DFA state limit exceeded (10000)"),
+    ):
+        result = generate("hello", engine="auto")
+    # bitnfa metadata comment includes 'engine:   bitnfa'; DFA doesn't
+    assert "engine:   bitnfa" in result.match_function
+    assert "alphabet-compression:" not in result.match_function
+
+
+def test_engine_auto_does_not_swallow_other_valueerrors() -> None:
+    """engine='auto' must re-raise ValueError messages that are not DFA state limit errors."""
+    with pytest.raises(ValueError, match="encoding must be"):
+        generate("hello", engine="auto", encoding="invalid")
+
+
+def test_engine_auto_does_not_swallow_dfa_limit_when_bitnfa_also_fails() -> None:
+    """When DFA state limit is exceeded and bitnfa also fails, the bitnfa error is raised."""
+    with (
+        patch(
+            "emx_regex_cgen.codegen.compile_regex",
+            side_effect=ValueError("DFA state limit exceeded (10000)"),
+        ),
+        patch(
+            "emx_regex_cgen.codegen.compile_nfa",
+            side_effect=ValueError("NFA has 300 positions (limit: 256)"),
+        ),
+        pytest.raises(ValueError, match="NFA has 300 positions"),
+    ):
+        generate("hello", engine="auto")
